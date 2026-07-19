@@ -4,20 +4,9 @@ import type { CSSProperties } from "react";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Manrope, Space_Grotesk } from "next/font/google";
 import { type Conversation, getConversations } from "@/lib/api/conversation";
 import { getCurrentUser } from "@/lib/utils/auth-utils";
 import styles from "./page.module.css";
-
-const headingFont = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-heading",
-});
-
-const bodyFont = Manrope({
-  subsets: ["latin"],
-  variable: "--font-body",
-});
 
 const AVATAR_THEMES = [
   { background: "linear-gradient(135deg, #0f766e, #14b8a6)", ring: "rgba(15, 118, 110, 0.35)" },
@@ -298,7 +287,7 @@ export default function ConversationsPage() {
   const pendingConversations = Math.max(conversations.length - activeConversations, 0);
 
   return (
-    <div className={`${styles.page} ${headingFont.variable} ${bodyFont.variable}`}>
+    <div className={styles.page}>
       <main className={styles.shell}>
         <section className={styles.heroPanel}>
           <Link href="/dashboard" className={styles.backLink}>

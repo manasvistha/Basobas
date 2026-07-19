@@ -24,6 +24,76 @@
   --text-color: var(--ink-900);
 }
 
+/* ============================================================
+   BasoBas Design System — tokens (clean, light theme)
+   Additive: existing legacy tokens above are kept until pages
+   are migrated. New components/pages consume the tokens below.
+   ============================================================ */
+:root {
+  /* Surfaces */
+  --color-bg: #f8faf9;            /* app background: near-white */
+  --color-surface: #ffffff;      /* cards / panels */
+  --color-surface-muted: #f1f5f4;/* subtle fills, hover rows */
+  --color-border: #e5eae8;       /* soft borders */
+  --color-border-strong: #d3dbd8;/* inputs, dividers that need weight */
+
+  /* Text (dark slate, cool-neutral) */
+  --color-text: #1e2a2e;         /* primary text */
+  --color-text-muted: #6b7b80;   /* secondary text */
+  --color-text-subtle: #9aa7ab;  /* placeholders, hints */
+
+  /* Brand accent — used sparingly */
+  --color-primary: #0f7670;
+  --color-primary-hover: #0b5e58;
+  --color-primary-soft: #e6f2f0; /* tint for active/highlight backgrounds */
+  --color-on-primary: #ffffff;
+
+  /* Status */
+  --color-success: #15803d;
+  --color-success-soft: #e7f6ec;
+  --color-error: #dc2626;
+  --color-error-soft: #fdecec;
+  --color-warning: #b45309;
+  --color-warning-soft: #fbf1e3;
+
+  /* Focus ring (keyboard-visible) */
+  --ring: 0 0 0 3px rgba(15, 118, 110, 0.20);
+
+  /* Spacing scale (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-8: 48px;
+  --space-10: 64px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  /* Shadows — soft, subtle */
+  --shadow-sm: 0 1px 2px rgba(16, 33, 34, 0.04), 0 1px 3px rgba(16, 33, 34, 0.06);
+  --shadow: 0 1px 3px rgba(16, 33, 34, 0.05), 0 6px 16px -8px rgba(16, 33, 34, 0.12);
+  --shadow-md: 0 12px 28px -14px rgba(16, 33, 34, 0.20);
+
+  /* Typography */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Opt-in page shell for redesigned routes (light, airy background).
+   Pages add className="ui-page"; nothing else changes globally. */
+.ui-page {
+  min-height: 100vh;
+  width: 100%;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
 html, body {
   height: 100%;
 }

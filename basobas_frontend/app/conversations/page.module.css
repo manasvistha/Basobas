@@ -52,7 +52,7 @@
 }
 
 .page :global(*) {
-  font-family: var(--font-body), "Trebuchet MS", "Segoe UI", sans-serif;
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
 }
 
 .shell {
@@ -113,7 +113,7 @@
 }
 
 .title {
-  font-family: var(--font-heading), "Franklin Gothic Medium", "Trebuchet MS", sans-serif;
+  font-family: "Franklin Gothic Medium", "Trebuchet MS", sans-serif;
   font-size: clamp(1.8rem, 3.5vw, 2.6rem);
   line-height: 1.04;
   letter-spacing: -0.03em;
@@ -146,7 +146,7 @@
 }
 
 .statValue {
-  font-family: var(--font-heading), "Franklin Gothic Medium", "Trebuchet MS", sans-serif;
+  font-family: "Franklin Gothic Medium", "Trebuchet MS", sans-serif;
   font-size: 1.28rem;
   line-height: 1;
   color: #143538;
@@ -283,7 +283,7 @@
   height: 48px;
   border-radius: 14px;
   color: #fff;
-  font-family: var(--font-heading), "Franklin Gothic Medium", "Trebuchet MS", sans-serif;
+  font-family: "Franklin Gothic Medium", "Trebuchet MS", sans-serif;
   font-size: 0.95rem;
   display: inline-flex;
   align-items: center;
@@ -398,7 +398,7 @@
 
 .stateTitle {
   margin: 0 0 8px;
-  font-family: var(--font-heading), "Franklin Gothic Medium", "Trebuchet MS", sans-serif;
+  font-family: "Franklin Gothic Medium", "Trebuchet MS", sans-serif;
   font-size: 1.2rem;
   color: #133032;
 }
