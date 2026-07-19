@@ -1,0 +1,94 @@
+/* Styles for Create Property page */
+.container {
+  min-height: 90vh;
+  background-color: #f8fafc;
+  padding: 2rem 1rem;
+}
+.wrapper {
+  max-width: 700px;
+  margin: 0 auto;
+}
+.inner {
+  max-width: 600px;
+  margin: 0 auto;
+}
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: 1rem;
+  padding: .5rem .875rem;
+  border: 1px solid #cbd5e1;
+  border-radius: .5rem;
+  background: #fff;
+  color: #334155;
+  font-size: .9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.headerTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 .5rem 0;
+}
+.subtitle {
+  color: #64748b;
+  margin-bottom: 1rem;
+}
+.card {
+  background: #ffffff;
+  padding: 1.25rem;
+  border-radius: .75rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 20px rgba(15,23,42,0.06);
+  max-width: 640px;
+  margin: 0 auto;
+}
+.error {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: .25rem;
+  color: #dc2626;
+}
+.field {
+  margin-bottom: 1.25rem;
+}
+.label {
+  display: block;
+  font-size: .875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: .5rem;
+}
+.control {
+  width: 100%;
+  padding: .75rem;
+  border: 1px solid #d1d5db;
+  border-radius: .375rem;
+  font-size: .95rem;
+  outline: none;
+}
+.input { height: 44px; }
+.select { height: 44px; }
+.textarea { resize: vertical; min-height: 96px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.tile { display: flex; align-items: center; gap: .5rem; padding: .75rem; border: 1px solid #e2e8f0; border-radius: .5rem; background-color: #f8fafc; }
+.amenitiesNote { font-size: .8rem; color: #6b7280; margin-top: .25rem; }
+.imagePreviewGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; max-height: 400px; overflow-y: auto; padding: 1rem; border: 1px solid #e2e8f0; border-radius: .5rem; background-color: #f8fafc; }
+.imageCard { position: relative; }
+.previewImg { width: 100%; height: 120px; object-fit: cover; border-radius: .5rem; border: 1px solid #e2e8f0; }
+.removeBtn { position: absolute; top: .25rem; right: .25rem; background-color: #dc2626; color: #fff; border: none; border-radius: 50%; width: 1.5rem; height: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.imageName { font-size: .75rem; color: #6b7280; margin-top: .25rem; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.actions { display: flex; gap: 1rem; }
+.btn { flex: 1; padding: .75rem 1rem; border-radius: .375rem; font-size: .95rem; font-weight: 600; cursor: pointer; }
+.btnPrimary { background: #4f46e5; color: #fff; border: none; }
+.btnPrimary:disabled { background: #9ca3af; cursor: not-allowed; }
+.btnSecondary { background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; }
+
+@media (max-width: 640px) {
+  .card { padding: 1rem; }
+  .headerTitle { font-size: 1.5rem; }
+}

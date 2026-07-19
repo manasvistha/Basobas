@@ -1,0 +1,588 @@
+.page {
+  --surface-0: #f4fbf9;
+  --surface-1: #ffffff;
+  --surface-2: rgba(255, 255, 255, 0.82);
+  --ink-900: #112022;
+  --ink-700: #2f4c50;
+  --ink-500: #5c7578;
+  --line: #d4e2df;
+  --line-strong: #bfd5d0;
+  --brand: #0f766e;
+  --brand-strong: #0b5e58;
+  --accent: #ea580c;
+  --shadow-soft: 0 22px 55px -30px rgba(8, 53, 49, 0.35);
+  --shadow-card: 0 18px 42px -34px rgba(9, 36, 40, 0.6);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 12% 10%, rgba(20, 184, 166, 0.18), transparent 38%),
+    radial-gradient(circle at 82% 16%, rgba(249, 115, 22, 0.2), transparent 35%),
+    linear-gradient(165deg, #edf8f6 0%, #f5f9fb 58%, #fff5ea 100%);
+  position: relative;
+  overflow: hidden;
+  color: var(--ink-900);
+}
+
+.page::before,
+.page::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(26px);
+  opacity: 0.6;
+  z-index: 0;
+  pointer-events: none;
+  animation: drift 11s ease-in-out infinite;
+}
+
+.page::before {
+  width: 270px;
+  height: 270px;
+  top: -90px;
+  left: -70px;
+  background: rgba(15, 118, 110, 0.3);
+}
+
+.page::after {
+  width: 230px;
+  height: 230px;
+  bottom: 20px;
+  right: -60px;
+  background: rgba(234, 88, 12, 0.24);
+  animation-delay: -4s;
+}
+
+.page :global(*) {
+  font-family: var(--font-body), "Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 36px 20px 60px;
+}
+
+.heroPanel {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(239, 250, 247, 0.65));
+  border: 1px solid rgba(170, 205, 196, 0.5);
+  border-radius: 28px;
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(8px);
+  padding: 24px 24px 26px;
+  margin-bottom: 22px;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--brand-strong);
+  text-decoration: none;
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+  font-weight: 700;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 118, 110, 0.22);
+  background: rgba(255, 255, 255, 0.65);
+  padding: 8px 12px;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.backLink:hover {
+  transform: translateX(-2px);
+  border-color: rgba(15, 118, 110, 0.42);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.heroGrid {
+  margin-top: 16px;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 320px);
+  align-items: end;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  font-size: 0.73rem;
+  letter-spacing: 0.13em;
+  color: var(--accent);
+  font-weight: 800;
+  margin-bottom: 7px;
+}
+
+.title {
+  font-family: var(--font-heading), "Franklin Gothic Medium", "Trebuchet MS", sans-serif;
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  margin-bottom: 9px;
+  color: #0f2224;
+}
+
+.subtitle {
+  color: var(--ink-700);
+  font-size: 0.97rem;
+  max-width: 620px;
+  line-height: 1.62;
+}
+
+.statsGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.statCard {
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 11px 12px;
+  box-shadow: 0 8px 24px -19px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statValue {
+  font-family: var(--font-heading), "Franklin Gothic Medium", "Trebuchet MS", sans-serif;
+  font-size: 1.28rem;
+  line-height: 1;
+  color: #143538;
+}
+
+.statLabel {
+  color: var(--ink-500);
+  font-size: 0.71rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.contentPanel {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(191, 213, 208, 0.55);
+  border-radius: 24px;
+  box-shadow: var(--shadow-card);
+  padding: 16px;
+  backdrop-filter: blur(6px);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.searchWrap {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  flex: 1;
+  background: rgba(248, 252, 251, 0.9);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 12px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.searchWrap:focus-within {
+  border-color: rgba(15, 118, 110, 0.65);
+  box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.13);
+}
+
+.searchIcon {
+  color: #4e6f73;
+  display: inline-flex;
+  align-items: center;
+}
+
+.searchInput {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  color: #163236;
+  padding: 10px 2px;
+  font-size: 0.9rem;
+}
+
+.searchInput::placeholder {
+  color: #799092;
+}
+
+.filterGroup {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  background: rgba(248, 252, 251, 0.9);
+  gap: 3px;
+}
+
+.filterButton {
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: #446165;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.filterButtonActive {
+  background: linear-gradient(135deg, #0f766e, #109e91);
+  color: #f8fffe;
+}
+
+.listWrap {
+  border-radius: 18px;
+  border: 1px solid #dce8e5;
+  background: rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.conversationCard {
+  --item-delay: 0ms;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+  padding: 15px 16px;
+  border-bottom: 1px solid #ebf2f1;
+  background: rgba(255, 255, 255, 0);
+  transition: transform 0.2s ease, background 0.2s ease;
+  animation: riseIn 0.45s ease var(--item-delay) both;
+}
+
+.list li:last-child .conversationCard {
+  border-bottom: none;
+}
+
+.conversationCard:hover {
+  background: linear-gradient(95deg, rgba(234, 248, 245, 0.68), rgba(255, 246, 236, 0.55));
+  transform: translateX(2px);
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  color: #fff;
+  font-family: var(--font-heading), "Franklin Gothic Medium", "Trebuchet MS", sans-serif;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.02em;
+  font-weight: 700;
+}
+
+.cardBody {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cardTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.name {
+  font-size: 0.92rem;
+  line-height: 1.2;
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #0f2a2d;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.time {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  color: #709093;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.preview {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #516d70;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.previewMuted {
+  color: #89a2a3;
+  font-style: italic;
+}
+
+.cardMeta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.metaBadge,
+.bookingBadge {
+  border-radius: 999px;
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 800;
+  padding: 5px 8px;
+  line-height: 1;
+}
+
+.metaBadge {
+  background: #e8f5f3;
+  color: #155851;
+  border: 1px solid #c4e4de;
+}
+
+.bookingBadge {
+  background: #fff1e6;
+  color: #9a3f0c;
+  border: 1px solid #ffd5bb;
+}
+
+.openAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1a6760;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 118, 110, 0.35);
+  padding: 7px 10px;
+  transition: background 0.16s ease;
+  white-space: nowrap;
+}
+
+.conversationCard:hover .openAction {
+  background: rgba(15, 118, 110, 0.1);
+}
+
+.stateCard {
+  border: 1px dashed #c7dbd6;
+  background: linear-gradient(145deg, #f7fbfa, #fef6ef);
+  border-radius: 18px;
+  padding: 36px 20px;
+  text-align: center;
+}
+
+.stateTitle {
+  margin: 0 0 8px;
+  font-family: var(--font-heading), "Franklin Gothic Medium", "Trebuchet MS", sans-serif;
+  font-size: 1.2rem;
+  color: #133032;
+}
+
+.stateText {
+  margin: 0 auto 16px;
+  max-width: 540px;
+  color: #547075;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.retryButton {
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #0f766e, #109889);
+  color: #fff;
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 12px 24px -18px rgba(15, 118, 110, 0.75);
+}
+
+.retryButton:hover {
+  transform: translateY(-1px);
+}
+
+.skeletonCard {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 15px 16px;
+  border-bottom: 1px solid #ecf3f2;
+}
+
+.skeletonCard:last-child {
+  border-bottom: none;
+}
+
+.skeletonAvatar,
+.skeletonLineShort,
+.skeletonLineLong,
+.skeletonLineMedium {
+  border-radius: 999px;
+  background: linear-gradient(95deg, #e7efee 30%, #f8fbfa 50%, #e7efee 70%);
+  background-size: 180% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+.skeletonAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+}
+
+.skeletonBody {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.skeletonLineShort {
+  width: 38%;
+  height: 11px;
+}
+
+.skeletonLineLong {
+  width: 78%;
+  height: 10px;
+}
+
+.skeletonLineMedium {
+  width: 55%;
+  height: 10px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -80% 0;
+  }
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(12px) scale(1.05);
+  }
+}
+
+@media (max-width: 960px) {
+  .heroGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statsGrid {
+    max-width: 560px;
+  }
+}
+
+@media (max-width: 760px) {
+  .shell {
+    padding: 20px 12px 28px;
+  }
+
+  .heroPanel {
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .statCard {
+    border-radius: 12px;
+    padding: 9px;
+  }
+
+  .contentPanel {
+    border-radius: 18px;
+    padding: 12px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filterGroup {
+    align-self: flex-start;
+  }
+
+  .conversationCard {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .openAction {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .title {
+    font-size: 1.85rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .conversationCard {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .stateCard {
+    padding: 26px 14px;
+  }
+}
