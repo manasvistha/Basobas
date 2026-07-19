@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { handleLogout } from "@/lib/actions/auth-actions";
 import { getCurrentUser, getImageUrl, getPropertyImageUrl } from "@/lib/utils/auth-utils";
 import { getProfile } from "@/lib/api/auth";
 import { getNotifications, markNotificationRead, markAllNotificationsRead, NotificationItem } from "@/lib/api/notification";
@@ -250,10 +249,12 @@ export default function DashboardPage() {
     setFilteredProperties(filtered);
   }, [allProperties, searchTerm, priceMin, priceMax]);
 
-  const onLogout = async () => {
+  const onLogout = () => {
     setShowProfileMenu(false);
-    const result = await handleLogout();
-    if (result.success) router.push("/login");
+    // Clear auth cookies client-side (they were httpOnly:false anyway)
+    document.cookie = "auth_token=; path=/; max-age=0";
+    document.cookie = "user_data=; path=/; max-age=0";
+    router.push("/login");
   };
 
   const handleMarkRead = async (id: string) => {

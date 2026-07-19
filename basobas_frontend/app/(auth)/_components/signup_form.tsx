@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, RegisterData } from "@/lib/authSchema";
-import { handleRegister } from "@/lib/actions/auth-actions";
+import { register as registerUser } from "@/lib/api/auth";
 import { useState } from "react";
 
 export default function RegisterForm() {
@@ -27,21 +27,42 @@ export default function RegisterForm() {
 
     try {
       console.log("Submitting registration form:", data);
-      // Call server action with form data
-      const result = await handleRegister(data);
+
+      // Call the API directly (no server action)
+      const result = await registerUser(data);
       console.log("Registration result:", result);
 
-      if (result.success) {
-        // Cookies are automatically set on server
+      // Consider it a success if the backend returned anything meaningful
+      const success =
+        result &&
+        (result.success ||
+          result.token ||
+          result.data ||
+          result.id ||
+          Object.keys(result).length > 0);
+
+      if (success) {
+        // Cookies were httpOnly:false anyway, so set them client-side
+        if (result.token) {
+          document.cookie = `auth_token=${result.token}; path=/; max-age=${
+            60 * 60 * 24 * 30
+          }`;
+        }
+        if (result.data) {
+          document.cookie = `user_data=${encodeURIComponent(
+            JSON.stringify(result.data)
+          )}; path=/; max-age=${60 * 60 * 24 * 30}`;
+        }
+
         router.push("/dashboard");
       } else {
-        const errorMsg = result.message || "Registration failed";
+        const errorMsg = result?.message || "Registration failed";
         console.log("Registration failed:", errorMsg);
         setErrorMessage(errorMsg);
       }
     } catch (error: any) {
       console.error("Registration catch error:", error);
-      const errorMsg = error.message || "An error occurred";
+      const errorMsg = error?.message || "An error occurred";
       setErrorMessage(errorMsg);
     } finally {
       setIsLoading(false);
@@ -55,7 +76,10 @@ export default function RegisterForm() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="login-form">
           {errorMessage && (
-            <div className="error-text" style={{ marginBottom: "1rem", color: "#dc2626" }}>
+            <div
+              className="error-text"
+              style={{ marginBottom: "1rem", color: "#dc2626" }}
+            >
               {errorMessage}
             </div>
           )}
@@ -120,13 +144,31 @@ export default function RegisterForm() {
             </div>
           </div>
 
-          <button type="submit" disabled={isLoading} style={{ background: "linear-gradient(135deg, #0b5e58 0%, #0f7670 100%)", color: "white", marginTop: "20px", padding: "12px", border: "none", borderRadius: "8px", cursor: isLoading ? "not-allowed" : "pointer", fontSize: "16px", transition: "all 0.2s", opacity: isLoading ? 0.7 : 1 }}>
+          <button
+            type="submit"
+            disabled={isLoading}
+            style={{
+              background: "linear-gradient(135deg, #0b5e58 0%, #0f7670 100%)",
+              color: "white",
+              marginTop: "20px",
+              padding: "12px",
+              border: "none",
+              borderRadius: "8px",
+              cursor: isLoading ? "not-allowed" : "pointer",
+              fontSize: "16px",
+              transition: "all 0.2s",
+              opacity: isLoading ? 0.7 : 1,
+            }}
+          >
             {isLoading ? "Creating Account..." : "Create Account"}
           </button>
         </form>
 
         <p className="signup-text">
-          Already have an account? <Link href="/login" style={{ color: "#0b5e58" }}>Log in</Link>
+          Already have an account?{" "}
+          <Link href="/login" style={{ color: "#0b5e58" }}>
+            Log in
+          </Link>
         </p>
       </div>
     </div>

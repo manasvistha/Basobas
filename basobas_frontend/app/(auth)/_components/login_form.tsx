@@ -5,11 +5,10 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginData } from "../schema";
-import { handleLogin } from "@/lib/actions/auth-actions";
+import { login as loginUser, requestPasswordReset } from "@/lib/api/auth";
 import { useState } from "react";
 import styles from "./login_form.module.css";
 import z from "zod";
-import { requestPasswordReset } from "@/lib/api/auth";
 import { toast } from "react-toastify";
 
 const RequestPasswordResetSchema = z.object({
@@ -18,7 +17,7 @@ const RequestPasswordResetSchema = z.object({
 
 type RequestPasswordResetDTO = z.infer<typeof RequestPasswordResetSchema>;
 
-export default function LoginForm() {43433
+export default function LoginForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -40,13 +39,35 @@ export default function LoginForm() {43433
   const onSubmit = async (data: LoginData) => {
     setIsLoading(true);
     setErrorMessage("");
-    
+
     try {
       console.log("Submitting login form:", data);
-      const result = await handleLogin(data);
+
+      // Call the API directly (no server action)
+      const result = await loginUser(data);
       console.log("Login result:", result);
-      
-      if (result.success) {
+
+      const success =
+        result &&
+        (result.success ||
+          result.token ||
+          result.data ||
+          result.id ||
+          Object.keys(result).length > 0);
+
+      if (success) {
+        // Cookies were httpOnly:false anyway, so set them client-side
+        if (result.token) {
+          document.cookie = `auth_token=${result.token}; path=/; max-age=${
+            60 * 60 * 24 * 30
+          }`;
+        }
+        if (result.data) {
+          document.cookie = `user_data=${encodeURIComponent(
+            JSON.stringify(result.data)
+          )}; path=/; max-age=${60 * 60 * 24 * 30}`;
+        }
+
         const role = result?.data?.role;
         if (role === "admin") {
           router.push("/admin/dashboard");
@@ -54,13 +75,13 @@ export default function LoginForm() {43433
           router.push("/dashboard");
         }
       } else {
-        const errorMsg = result.message || "Login failed";
+        const errorMsg = result?.message || "Login failed";
         console.log("Login failed:", errorMsg);
         setErrorMessage(errorMsg);
       }
     } catch (error: any) {
       console.error("Login catch error:", error);
-      const errorMsg = error.message || "An error occurred";
+      const errorMsg = error?.message || "An error occurred";
       setErrorMessage(errorMsg);
     } finally {
       setIsLoading(false);
@@ -100,15 +121,15 @@ export default function LoginForm() {43433
         <h1 style={{ color: "#0b5e58" }}>{showForgotPassword ? "Reset Password" : "Welcome to Rentora"}</h1>
 
         {!showForgotPassword && (
-          <button 
-            onClick={() => setShowForgotPassword(true)} 
+          <button
+            onClick={() => setShowForgotPassword(true)}
             className="text-teal-500 hover:underline text-sm"
-            style={{ 
-              position: 'absolute', 
-              bottom: '45px', 
-              right: '10px', 
-              background: 'none', 
-              border: 'none', 
+            style={{
+              position: 'absolute',
+              bottom: '45px',
+              right: '10px',
+              background: 'none',
+              border: 'none',
               cursor: 'pointer',
               fontSize: '14px'
             }}
@@ -124,7 +145,7 @@ export default function LoginForm() {43433
                 {errorMessage}
               </div>
             )}
-            
+
             {/* Email */}
             <div className="form-row">
               <label>Email</label>
@@ -155,10 +176,10 @@ export default function LoginForm() {43433
               </div>
             </div>
 
-            <button 
-              type="submit" 
-              disabled={isLoading} 
-              style={{ 
+            <button
+              type="submit"
+              disabled={isLoading}
+              style={{
                 marginTop: "8px",
                 background: "linear-gradient(135deg, #0b5e58 0%, #0f7670 100%)",
                 color: "white",
@@ -205,8 +226,8 @@ export default function LoginForm() {43433
               Don't have an account? <Link href="/register" style={{ color: "#0b5e58" }}>Sign Up</Link>
             </>
           ) : (
-            <button 
-              onClick={() => setShowForgotPassword(false)} 
+            <button
+              onClick={() => setShowForgotPassword(false)}
               className="text-teal-500 hover:underline"
               style={{ background: 'none', border: 'none', cursor: 'pointer', color: "#0b5e58" }}
             >

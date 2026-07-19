@@ -6,7 +6,6 @@ import BackPillLink from "@/components/ui/BackPillLink";
 import { useRouter } from "next/navigation";
 import { getAllProperties, updatePropertyStatus, deleteProperty, approveProperty, rejectProperty } from "@/lib/api/admin";
 import { getProperty } from "@/lib/api/property";
-import { handleLogout } from "@/lib/actions/auth-actions";
 import { getCurrentUser, getPropertyImageUrl } from "@/lib/utils/auth-utils";
 
 type PropertyRow = {
@@ -123,8 +122,10 @@ export default function AdminPropertiesPage() {
     }
   };
 
-  const handleLogoutClick = async () => {
-    await handleLogout();
+  const handleLogoutClick = () => {
+    // Clear auth cookies client-side (they were httpOnly:false anyway)
+    document.cookie = "auth_token=; path=/; max-age=0";
+    document.cookie = "user_data=; path=/; max-age=0";
     router.push('/login');
   };
 
