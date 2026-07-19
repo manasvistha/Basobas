@@ -7,7 +7,7 @@ export async function connectDB() {
     mongoose.set('strictQuery', false);
     
     await mongoose.connect(MONGO_URI);
-    console.log("MongoDB Connected (Rentora)");
+    console.log("MongoDB Connected (basobas)");
   } catch (error) {
     console.error("MongoDB Connection Error:", error);
     console.log("Continuing without database connection for development...");

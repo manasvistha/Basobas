@@ -29,10 +29,6 @@ export function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
     if (isAuthenticated) {
-        if (isPublic) {
-            const dashboardUrl = user!.role === 'admin' ? '/admin/dashboard' : '/dashboard';
-            return NextResponse.redirect(new URL(dashboardUrl, request.url));
-        }
         if (isAdminPath && user!.role !== 'admin') {
             return NextResponse.redirect(new URL('/', request.url));
         }

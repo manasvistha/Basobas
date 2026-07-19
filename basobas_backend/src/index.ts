@@ -148,7 +148,7 @@ export default app;
 // Start server only when running index.ts directly
 if (require.main === module) {
   app.listen(Number(port), "0.0.0.0", () => {
-    console.log(`\n✅ Rentora Server Started`);
+    console.log(`\n✅  Server Started`);
     console.log(`📡 Port: ${port}`);
     console.log(`📱 For Flutter connection, use your machine's IP address.`);
   });
