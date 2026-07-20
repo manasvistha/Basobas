@@ -486,7 +486,7 @@ export default function DashboardPage() {
       <header style={{ background: "linear-gradient(90deg, rgba(6,182,212,0.08) 0%, rgba(99,102,241,0.03) 40%, #ffffff 100%)", backdropFilter: "saturate(120%) blur(4px)", borderBottom: "1px solid rgba(99,102,241,0.06)", position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 28px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 62 }}>
           <Link href="/dashboard" style={{ display: "flex", alignItems: "center", gap: 9, textDecoration: "none" }}>
-            <img src="/Logo.png" alt="Rentora" style={{ height: 32, width: "auto" }} />
+            <img src="/basobas.png" alt="BasoBas" style={{ height: 32, width: "auto" }} />
             <span style={{ fontSize: "1.0625rem", fontWeight: 700, letterSpacing: "-0.02em", background: "linear-gradient(90deg,#6366f1,#06b6d4)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Rentora</span>
           </Link>
 

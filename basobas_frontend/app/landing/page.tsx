@@ -9,8 +9,8 @@ export default function LandingPage() {
       <nav className="navbar">
         <div className="logo">
           <Image
-            src="/Logo.png"
-            alt="Logo.png"
+            src="/basobas.png"
+            alt="BasoBas"
             width={150}
             height={80}
             priority
@@ -32,7 +32,7 @@ export default function LandingPage() {
 
       <section className="hero">
         <div className="hero-overlay">
-          <h1>Find Your Dream Room with Rentora</h1>
+          <h1>Find Your Dream Room with Basobas</h1>
           <p>Easily list flats, find roommates, and rent hassle-free</p>
         </div>
       </section>

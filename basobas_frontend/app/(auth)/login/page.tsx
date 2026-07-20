@@ -7,8 +7,8 @@ export default function LoginPage() {
       <div className="login-left">
         <div className="login-logo">
           <Image
-            src="/Logo.png"
-            alt="Logo.png"
+            src="/basobas.png"
+            alt="BasoBas"
             width={150}
             height={80}
             priority

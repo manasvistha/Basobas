@@ -7,8 +7,8 @@ export default function RegisterPage() {
       <div className="login-left">
         <div className="login-logo">
           <Image
-            src="/Logo.png"
-            alt="Logo.png"
+            src="/basobas.png"
+            alt="BasoBas"
             width={220}
             height={80}
             priority

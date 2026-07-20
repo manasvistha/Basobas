@@ -189,8 +189,8 @@ export default function AdminDashboardPage() {
             }}
           >
             <img
-              src="/Logo.png"
-              alt="Rentora"
+              src="/basobas.png"
+              alt="BasoBas"
               style={{ height: "2.5rem", width: "auto" }}
             />
             <span
