@@ -22,14 +22,19 @@ export default function PropertyLocationMapContent({
   coordinates,
   height = 220,
 }: PropertyLocationMapContentProps) {
-  if (!isValidCoordinates(coordinates)) {
+  // Hooks must run on every render (Rules of Hooks) — compute the center
+  // unconditionally and bail out AFTER, so the hook count never changes.
+  const center = useMemo<[number, number] | null>(
+    () =>
+      isValidCoordinates(coordinates)
+        ? [coordinates.latitude, coordinates.longitude]
+        : null,
+    [coordinates]
+  );
+
+  if (!center) {
     return null;
   }
-
-  const center = useMemo<[number, number]>(
-    () => [coordinates.latitude, coordinates.longitude],
-    [coordinates.latitude, coordinates.longitude]
-  );
 
   return (
     <div style={{ height, borderRadius: 12, overflow: "hidden", border: "1px solid #e2e8f0" }}>

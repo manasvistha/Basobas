@@ -9,10 +9,10 @@ import { getCurrentUser } from "@/lib/utils/auth-utils";
 import styles from "./page.module.css";
 
 const AVATAR_THEMES = [
-  { background: "linear-gradient(135deg, #0f766e, #14b8a6)", ring: "rgba(15, 118, 110, 0.35)" },
-  { background: "linear-gradient(135deg, #ea580c, #f97316)", ring: "rgba(249, 115, 22, 0.34)" },
-  { background: "linear-gradient(135deg, #2563eb, #0ea5e9)", ring: "rgba(14, 165, 233, 0.34)" },
-  { background: "linear-gradient(135deg, #7c2d12, #b45309)", ring: "rgba(180, 83, 9, 0.34)" },
+  { background: "#334155", ring: "rgba(15, 23, 42, 0.18)" },
+  { background: "#475569", ring: "rgba(15, 23, 42, 0.18)" },
+  { background: "#1f2937", ring: "rgba(15, 23, 42, 0.18)" },
+  { background: "#64748b", ring: "rgba(15, 23, 42, 0.18)" },
 ] as const;
 
 type FilterOption = "all" | "active";
