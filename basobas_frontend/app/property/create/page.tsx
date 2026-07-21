@@ -198,17 +198,6 @@ export default function CreatePropertyPage() {
               <input className={`${styles.control} ${styles.input}`} type="text" name="amenities" value={formData.amenities} onChange={handleInputChange} placeholder="e.g., WiFi, AC, Laundry, Kitchen" />
             </div>
 
-            <div className={styles.grid}>
-              <div className={styles.field}>
-                <label className={styles.label}>Available From</label>
-                <input className={`${styles.control} ${styles.input}`} type="date" name="availabilityStart" value={formData.availabilityStart} onChange={handleInputChange} required />
-              </div>
-              <div className={styles.field}>
-                <label className={styles.label}>Available Until</label>
-                <input className={`${styles.control} ${styles.input}`} type="date" name="availabilityEnd" value={formData.availabilityEnd} onChange={handleInputChange} required />
-              </div>
-            </div>
-
             <div className={styles.field}>
               <label className={styles.label}>Property Images</label>
               <input className={`${styles.control} ${styles.input}`} type="file" multiple accept="image/*" onChange={handleImageChange} />
