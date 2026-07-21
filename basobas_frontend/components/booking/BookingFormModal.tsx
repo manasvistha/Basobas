@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createBooking, TenantInfo, PaymentInfo } from "@/lib/api/booking";
+import { Button, Input, Label, Textarea } from "@/components/ui";
 
 type PropertyMinimal = { _id: string; title?: string; price?: number };
 
@@ -63,23 +64,71 @@ export default function BookingFormModal({ property, onClose, onSuccess }: { pro
   };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3000 }}>
-      <div style={{ width: 420, maxWidth: '96%', background: '#fff', borderRadius: 12, padding: 18 }}>
-        <h3 style={{ margin: 0, marginBottom: 8 }}>Book: {property.title}</h3>
-        <p style={{ marginTop: 0, color: '#64748b', fontSize: 13 }}>Price: Rs {Number(property.price ?? 0).toLocaleString()}</p>
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(15, 23, 42, 0.55)',
+        backdropFilter: 'blur(2px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 3000,
+        padding: 16,
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: 460,
+          maxWidth: '100%',
+          maxHeight: '90vh',
+          overflowY: 'auto',
+          background: 'var(--color-surface)',
+          border: '1px solid var(--color-border)',
+          borderRadius: 'var(--radius-xl)',
+          boxShadow: 'var(--shadow-md)',
+          padding: 'var(--space-6)',
+        }}
+      >
+        <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-text)', letterSpacing: '-0.01em' }}>
+          Book: {property.title}
+        </h3>
+        <p style={{ margin: '6px 0 20px', color: 'var(--color-text-muted)', fontSize: 14 }}>
+          Price: Rs {Number(property.price ?? 0).toLocaleString()}
+        </p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <input placeholder="Your name" value={name} onChange={e => setName(e.target.value)} style={{ padding: 10, borderRadius: 8, border: '1px solid #e6eaf7' }} />
-          <input placeholder="Email (optional)" value={email} onChange={e => setEmail(e.target.value)} style={{ padding: 10, borderRadius: 8, border: '1px solid #e6eaf7' }} />
-          <input placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} style={{ padding: 10, borderRadius: 8, border: '1px solid #e6eaf7' }} />
-          <textarea placeholder="Message (optional)" value={message} onChange={e => setMessage(e.target.value)} style={{ padding: 10, borderRadius: 8, border: '1px solid #e6eaf7' }} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div>
+            <Label htmlFor="bk-name" required>Your name</Label>
+            <Input id="bk-name" placeholder="Enter your name" value={name} onChange={e => setName(e.target.value)} />
+          </div>
+          <div>
+            <Label htmlFor="bk-email">Email (optional)</Label>
+            <Input id="bk-email" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} />
+          </div>
+          <div>
+            <Label htmlFor="bk-phone" required>Phone</Label>
+            <Input id="bk-phone" placeholder="98XXXXXXXX" value={phone} onChange={e => setPhone(e.target.value)} />
+          </div>
+          <div>
+            <Label htmlFor="bk-message">Message (optional)</Label>
+            <Textarea id="bk-message" placeholder="Anything you'd like the host to know?" value={message} onChange={e => setMessage(e.target.value)} />
+          </div>
         </div>
 
-        {error && <div style={{ color: '#ef4444', marginTop: 8 }}>{error}</div>}
+        {error && (
+          <div style={{ marginTop: 14, background: 'var(--color-error-soft)', color: 'var(--color-error)', borderRadius: 'var(--radius-sm)', padding: '10px 12px', fontSize: 14 }}>
+            {error}
+          </div>
+        )}
 
-        <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-          <button onClick={onClose} style={{ flex: 1, padding: '10px 12px', borderRadius: 8, background: '#f3f4f6', border: 'none', cursor: 'pointer' }}>Cancel</button>
-          <button onClick={handlePayAndBook} disabled={isPaying} style={{ flex: 1, padding: '10px 12px', borderRadius: 8, background: '#4f46e5', color: '#fff', border: 'none', cursor: isPaying ? 'not-allowed' : 'pointer' }}>{isPaying ? 'Processing...' : 'Pay & Book'}</button>
+        <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
+          <Button variant="secondary" onClick={onClose} style={{ flex: 1 }}>Cancel</Button>
+          <Button variant="primary" onClick={handlePayAndBook} disabled={isPaying} style={{ flex: 1 }}>
+            {isPaying ? 'Processing…' : 'Pay & Book'}
+          </Button>
         </div>
       </div>
     </div>
