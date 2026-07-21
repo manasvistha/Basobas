@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import BackPillLink from "@/components/ui/BackPillLink";
 import axios from "@/lib/api/axios";
 import { API } from "@/lib/api/endpoints";
-import { getProfile, updateProfile, exportMyData } from "@/lib/api/auth";
+import { getProfile, updateProfile, exportMyData, mfaSetup, mfaEnable, mfaDisable } from "@/lib/api/auth";
 import { getCurrentUser, getImageUrl } from "@/lib/utils/auth-utils";
 import { Button } from "@/components/ui";
 
@@ -16,6 +16,7 @@ type ProfileUser = {
   username?: string;
   role?: string;
   profilePicture?: string;
+  mfaEnabled?: boolean;
 };
 
 export default function UserProfilePage() {
@@ -32,6 +33,12 @@ export default function UserProfilePage() {
   const [error, setError] = useState("");
   const [user, setUser] = useState<ProfileUser | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [mfaEnabled, setMfaEnabled] = useState(false);
+  const [mfaSetupData, setMfaSetupData] = useState<{ qrDataUrl: string; secret: string } | null>(null);
+  const [mfaOtp, setMfaOtp] = useState("");
+  const [mfaBusy, setMfaBusy] = useState(false);
+  const [mfaMsg, setMfaMsg] = useState("");
+  const [mfaError, setMfaError] = useState("");
 
   const fallbackAvatar = useMemo(() => {
     const displayName = user?.name || "User";
@@ -65,6 +72,7 @@ export default function UserProfilePage() {
           setEmail(user.email || "");
           setUsername(user.username || "");
           setCurrentPhoto(user.profilePicture || null);
+          setMfaEnabled(!!user.mfaEnabled);
           document.cookie = `user_data=${encodeURIComponent(
             JSON.stringify({
               id,
@@ -143,6 +151,54 @@ export default function UserProfilePage() {
       setError(err?.message || "Failed to export your data");
     } finally {
       setExporting(false);
+    }
+  };
+
+  const handleStartMfaSetup = async () => {
+    setMfaBusy(true);
+    setMfaError("");
+    setMfaMsg("");
+    try {
+      const data = await mfaSetup();
+      setMfaSetupData({ qrDataUrl: data.qrDataUrl, secret: data.secret });
+      setMfaOtp("");
+    } catch (err: any) {
+      setMfaError(err?.response?.data?.message || err?.message || "Failed to start setup");
+    } finally {
+      setMfaBusy(false);
+    }
+  };
+
+  const handleConfirmMfa = async () => {
+    setMfaBusy(true);
+    setMfaError("");
+    setMfaMsg("");
+    try {
+      await mfaEnable(mfaOtp.trim());
+      setMfaEnabled(true);
+      setMfaSetupData(null);
+      setMfaOtp("");
+      setMfaMsg("Two-factor authentication enabled.");
+    } catch (err: any) {
+      setMfaError(err?.response?.data?.message || err?.message || "Invalid authentication code");
+    } finally {
+      setMfaBusy(false);
+    }
+  };
+
+  const handleDisableMfa = async () => {
+    setMfaBusy(true);
+    setMfaError("");
+    setMfaMsg("");
+    try {
+      await mfaDisable(mfaOtp.trim());
+      setMfaEnabled(false);
+      setMfaOtp("");
+      setMfaMsg("Two-factor authentication disabled.");
+    } catch (err: any) {
+      setMfaError(err?.response?.data?.message || err?.message || "Invalid authentication code");
+    } finally {
+      setMfaBusy(false);
     }
   };
 
@@ -499,6 +555,98 @@ export default function UserProfilePage() {
           <Button variant="secondary" onClick={handleExportData} disabled={exporting}>
             {exporting ? "Preparing…" : "Download my data"}
           </Button>
+        </div>
+
+        {/* Two-factor authentication */}
+        <div
+          style={{
+            marginTop: "1.5rem",
+            backgroundColor: "#ffffff",
+            border: "1px solid #e6e9ef",
+            borderRadius: "0.75rem",
+            padding: "1.5rem",
+            boxShadow: "0 8px 24px rgba(15,23,42,0.06)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+            <div>
+              <h3 style={{ fontSize: "1.125rem", fontWeight: "600" }}>Two-factor authentication</h3>
+              <p style={{ color: "#64748b", marginTop: 4, maxWidth: "48ch" }}>
+                Add a second step at login using an authenticator app such as Google Authenticator or Authy.
+              </p>
+            </div>
+            <span
+              style={{
+                fontSize: 12,
+                fontWeight: 600,
+                padding: "5px 10px",
+                borderRadius: 999,
+                background: mfaEnabled ? "#e7f6ec" : "#f1f5f4",
+                color: mfaEnabled ? "#15803d" : "#6b7b80",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {mfaEnabled ? "Enabled" : "Disabled"}
+            </span>
+          </div>
+
+          {mfaMsg && <div style={{ marginTop: 12, color: "#166534", fontSize: 14 }}>✅ {mfaMsg}</div>}
+          {mfaError && <div style={{ marginTop: 12, color: "#dc2626", fontSize: 14 }}>⚠️ {mfaError}</div>}
+
+          {mfaEnabled ? (
+            <div style={{ marginTop: 16, display: "grid", gap: 10, maxWidth: 320 }}>
+              <p style={{ fontSize: 14, color: "#475569" }}>Enter a current code to turn it off.</p>
+              <input
+                value={mfaOtp}
+                onChange={(e) => setMfaOtp(e.target.value.replace(/\D/g, ""))}
+                maxLength={6}
+                inputMode="numeric"
+                placeholder="123456"
+                style={{ padding: 10, borderRadius: 10, border: "1px solid #e6e9ef", backgroundColor: "#f8fafc", color: "#0f172a", fontSize: "0.875rem", maxWidth: 200 }}
+              />
+              <div>
+                <Button variant="danger" onClick={handleDisableMfa} disabled={mfaBusy || mfaOtp.length < 6}>
+                  {mfaBusy ? "Disabling…" : "Disable 2FA"}
+                </Button>
+              </div>
+            </div>
+          ) : mfaSetupData ? (
+            <div style={{ marginTop: 16, display: "grid", gap: 12, maxWidth: 380 }}>
+              <p style={{ fontSize: 14, color: "#475569" }}>1. Scan this QR code in your authenticator app:</p>
+              <img
+                src={mfaSetupData.qrDataUrl}
+                alt="Two-factor authentication QR code"
+                style={{ width: 180, height: 180, border: "1px solid #e5eae8", borderRadius: 12, background: "#fff" }}
+              />
+              <p style={{ fontSize: 13, color: "#6b7b80" }}>
+                Or enter this key manually:{" "}
+                <code style={{ background: "#f1f5f4", padding: "2px 6px", borderRadius: 6, wordBreak: "break-all" }}>{mfaSetupData.secret}</code>
+              </p>
+              <p style={{ fontSize: 14, color: "#475569" }}>2. Enter the 6-digit code to confirm:</p>
+              <input
+                value={mfaOtp}
+                onChange={(e) => setMfaOtp(e.target.value.replace(/\D/g, ""))}
+                maxLength={6}
+                inputMode="numeric"
+                placeholder="123456"
+                style={{ padding: 10, borderRadius: 10, border: "1px solid #e6e9ef", backgroundColor: "#f8fafc", color: "#0f172a", fontSize: "0.875rem", maxWidth: 200 }}
+              />
+              <div style={{ display: "flex", gap: 8 }}>
+                <Button variant="primary" onClick={handleConfirmMfa} disabled={mfaBusy || mfaOtp.length < 6}>
+                  {mfaBusy ? "Verifying…" : "Verify & enable"}
+                </Button>
+                <Button variant="secondary" onClick={() => { setMfaSetupData(null); setMfaOtp(""); setMfaError(""); }}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div style={{ marginTop: 16 }}>
+              <Button variant="primary" onClick={handleStartMfaSetup} disabled={mfaBusy}>
+                {mfaBusy ? "Preparing…" : "Enable 2FA"}
+              </Button>
+            </div>
+          )}
         </div>
       </main>
       </div>

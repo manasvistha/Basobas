@@ -1,6 +1,7 @@
 import { UserModel } from "../models/user.model";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import { authenticator } from "otplib";
 import { sendEmail } from "../config/email";
 import { JWT_SECRET } from "../config";
 import { HttpError } from "../errors/http-error";
@@ -26,18 +27,46 @@ export class AuthService {
       throw new Error("Invalid credentials"); // Password wrong
     }
 
-    // 3. Generate JWT Token
+    // 3. If the account has MFA enabled, stop here — the controller will issue a
+    //    short-lived MFA token and the client must complete the second step.
+    if (user.mfaEnabled) {
+      return { mfaRequired: true as const, userId: user._id.toString() };
+    }
+
+    // 4. Generate JWT Token
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET || "fallback_secret",
       { expiresIn: "30d" }
     );
 
-    // 4. Return keys that match what our Controller and Flutter expect
+    // 5. Return keys that match what our Controller and Flutter expect
     return {
+      mfaRequired: false as const,
       user: user.toJSON(), // Converts _id to id and hides password
       token,
     };
+  }
+
+  // Second step of an MFA login: verify the TOTP code, then issue the real JWT.
+  async completeMfaLogin(userId: string, otp: string) {
+    const user = await UserModel.findById(userId);
+    if (!user || !user.mfaEnabled || !user.mfaSecret) {
+      throw new Error("MFA is not set up for this account");
+    }
+
+    const isValid = authenticator.check(String(otp).trim(), user.mfaSecret);
+    if (!isValid) {
+      throw new Error("Invalid authentication code");
+    }
+
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET || "fallback_secret",
+      { expiresIn: "30d" }
+    );
+
+    return { user: user.toJSON(), token };
   }
 
   async register(data: any) {

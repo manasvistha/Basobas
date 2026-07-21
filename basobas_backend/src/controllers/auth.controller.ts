@@ -6,7 +6,10 @@ import { BookingService } from "../services/booking.service";
 import { FavoriteService } from "../services/favorite.service";
 import { NotificationService } from "../services/notification.service";
 import { ConversationService } from "../services/conversation.service";
+import { MfaService } from "../services/mfa.service";
 import { registerDTO, loginDTO } from "../dtos/user.dto";
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../config";
 
 const authService = new AuthService();
 const userService = new UserService();
@@ -15,6 +18,7 @@ const bookingService = new BookingService();
 const favoriteService = new FavoriteService();
 const notificationService = new NotificationService();
 const conversationService = new ConversationService();
+const mfaService = new MfaService();
 
 export class AuthController {
   // src/controllers/auth.controller.ts
@@ -70,10 +74,25 @@ export class AuthController {
       
       // 2. Perform login via service
       const result = await authService.login(validatedData);
-      
+
+      // 2a. If MFA is enabled, don't issue the real token yet. Hand back a
+      //     short-lived MFA token; the client must call /login/verify-mfa.
+      if (result.mfaRequired) {
+        const mfaToken = jwt.sign(
+          { id: result.userId, purpose: "mfa" },
+          JWT_SECRET,
+          { expiresIn: "5m" }
+        );
+        return res.status(200).json({
+          success: true,
+          mfaRequired: true,
+          mfaToken,
+        });
+      }
+
       console.log('✅ Login successful for user:', (result.user as any).id);
       console.log('📝 Token generated (first 20 chars):', result.token.substring(0, 20) + '...');
-      
+
       // 3. Return response - Flutter looks for 'token' and 'data'
       // result should be { user: IUser, token: string }
       // Note: authService.login already calls toJSON(), so result.user is already serialized
@@ -90,6 +109,69 @@ export class AuthController {
         message: error.message || "Login failed",
         error: error.message 
       });
+    }
+  }
+
+  // Second step of MFA login: exchange the short-lived mfaToken + OTP for a real JWT.
+  async verifyMfaLogin(req: Request, res: Response) {
+    try {
+      const { mfaToken, otp } = req.body || {};
+      if (!mfaToken || !otp) {
+        return res.status(400).json({ success: false, message: "mfaToken and otp are required" });
+      }
+
+      let decoded: any;
+      try {
+        decoded = jwt.verify(mfaToken, JWT_SECRET);
+      } catch {
+        return res.status(401).json({ success: false, message: "MFA session expired, please log in again" });
+      }
+
+      if (decoded?.purpose !== "mfa" || !decoded?.id) {
+        return res.status(401).json({ success: false, message: "Invalid MFA token" });
+      }
+
+      const result = await authService.completeMfaLogin(decoded.id, String(otp));
+      return res.status(200).json({ success: true, token: result.token, data: result.user });
+    } catch (error: any) {
+      return res.status(401).json({ success: false, message: error.message || "MFA verification failed" });
+    }
+  }
+
+  // Begin MFA enrollment — returns otpauth URL + QR data-url to scan.
+  async mfaSetup(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user.id;
+      const data = await mfaService.generateSetup(userId);
+      return res.status(200).json({ success: true, ...data });
+    } catch (error: any) {
+      return res.status(400).json({ success: false, message: error.message || "Failed to start MFA setup" });
+    }
+  }
+
+  // Confirm enrollment with the first code.
+  async mfaEnable(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user.id;
+      const { otp } = req.body || {};
+      if (!otp) return res.status(400).json({ success: false, message: "otp is required" });
+      const data = await mfaService.enable(userId, String(otp));
+      return res.status(200).json({ success: true, message: "Two-factor authentication enabled", ...data });
+    } catch (error: any) {
+      return res.status(400).json({ success: false, message: error.message || "Failed to enable MFA" });
+    }
+  }
+
+  // Turn MFA off (requires a current code).
+  async mfaDisable(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user.id;
+      const { otp } = req.body || {};
+      if (!otp) return res.status(400).json({ success: false, message: "otp is required" });
+      const data = await mfaService.disable(userId, String(otp));
+      return res.status(200).json({ success: true, message: "Two-factor authentication disabled", ...data });
+    } catch (error: any) {
+      return res.status(400).json({ success: false, message: error.message || "Failed to disable MFA" });
     }
   }
 

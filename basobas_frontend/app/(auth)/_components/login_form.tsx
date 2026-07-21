@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginData } from "../schema";
-import { login as loginUser, requestPasswordReset } from "@/lib/api/auth";
+import { login as loginUser, requestPasswordReset, verifyLoginMfa } from "@/lib/api/auth";
 import { useState } from "react";
 import styles from "./login_form.module.css";
 import z from "zod";
@@ -23,6 +23,9 @@ export default function LoginForm() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showMfa, setShowMfa] = useState(false);
+  const [mfaToken, setMfaToken] = useState("");
+  const [otp, setOtp] = useState("");
 
   const {
     register,
@@ -36,16 +39,40 @@ export default function LoginForm() {
     resolver: zodResolver(RequestPasswordResetSchema),
   });
 
+  // Shared success path: store auth cookies and redirect by role.
+  const finishLogin = (result: any) => {
+    if (result.token) {
+      document.cookie = `auth_token=${result.token}; path=/; max-age=${60 * 60 * 24 * 30}`;
+    }
+    if (result.data) {
+      document.cookie = `user_data=${encodeURIComponent(
+        JSON.stringify(result.data)
+      )}; path=/; max-age=${60 * 60 * 24 * 30}`;
+    }
+    const role = result?.data?.role;
+    if (role === "admin") {
+      router.push("/admin/dashboard");
+    } else {
+      router.push("/dashboard");
+    }
+  };
+
   const onSubmit = async (data: LoginData) => {
     setIsLoading(true);
     setErrorMessage("");
 
     try {
-      console.log("Submitting login form:", data);
-
       // Call the API directly (no server action)
       const result = await loginUser(data);
-      console.log("Login result:", result);
+
+      // If the account has MFA enabled, switch to the code-entry step.
+      if (result?.mfaRequired && result?.mfaToken) {
+        setMfaToken(result.mfaToken);
+        setOtp("");
+        setShowMfa(true);
+        setIsLoading(false);
+        return;
+      }
 
       const success =
         result &&
@@ -56,33 +83,31 @@ export default function LoginForm() {
           Object.keys(result).length > 0);
 
       if (success) {
-        // Cookies were httpOnly:false anyway, so set them client-side
-        if (result.token) {
-          document.cookie = `auth_token=${result.token}; path=/; max-age=${
-            60 * 60 * 24 * 30
-          }`;
-        }
-        if (result.data) {
-          document.cookie = `user_data=${encodeURIComponent(
-            JSON.stringify(result.data)
-          )}; path=/; max-age=${60 * 60 * 24 * 30}`;
-        }
-
-        const role = result?.data?.role;
-        if (role === "admin") {
-          router.push("/admin/dashboard");
-        } else {
-          router.push("/dashboard");
-        }
+        finishLogin(result);
       } else {
-        const errorMsg = result?.message || "Login failed";
-        console.log("Login failed:", errorMsg);
-        setErrorMessage(errorMsg);
+        setErrorMessage(result?.message || "Login failed");
       }
     } catch (error: any) {
-      console.error("Login catch error:", error);
-      const errorMsg = error?.message || "An error occurred";
-      setErrorMessage(errorMsg);
+      setErrorMessage(error?.message || "An error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onVerifyMfa = async () => {
+    setIsLoading(true);
+    setErrorMessage("");
+    try {
+      const result = await verifyLoginMfa(mfaToken, otp.trim());
+      if (result?.token || result?.data) {
+        finishLogin(result);
+      } else {
+        setErrorMessage(result?.message || "Verification failed");
+      }
+    } catch (error: any) {
+      setErrorMessage(
+        error?.response?.data?.message || error?.message || "Invalid authentication code"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -118,9 +143,9 @@ export default function LoginForm() {
       </div>
 
       <div className="login-box" style={{ position: 'relative', background: "linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(239, 250, 247, 0.65))", border: "1px solid rgba(170, 205, 196, 0.5)", boxShadow: "0 22px 55px -30px rgba(8, 53, 49, 0.35)" }}>
-        <h1 style={{ color: "#0b5e58" }}>{showForgotPassword ? "Reset Password" : "Welcome to Rentora"}</h1>
+        <h1 style={{ color: "#0b5e58" }}>{showMfa ? "Two-step verification" : showForgotPassword ? "Reset Password" : "Welcome to BasoBas"}</h1>
 
-        {!showForgotPassword && (
+        {!showForgotPassword && !showMfa && (
           <button
             onClick={() => setShowForgotPassword(true)}
             className="text-teal-500 hover:underline text-sm"
@@ -138,7 +163,47 @@ export default function LoginForm() {
           </button>
         )}
 
-        {!showForgotPassword ? (
+        {showMfa ? (
+          <form onSubmit={(e) => { e.preventDefault(); void onVerifyMfa(); }} className="login-form">
+            {errorMessage && (
+              <div className="error-text" style={{ marginBottom: "1rem" }}>
+                {errorMessage}
+              </div>
+            )}
+            <p style={{ fontSize: 14, color: "#475569", marginBottom: 4 }}>
+              Enter the 6-digit code from your authenticator app.
+            </p>
+            <div className="form-row">
+              <label>Code</label>
+              <div className="field">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  placeholder="123456"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                  autoFocus
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              disabled={isLoading || otp.length < 6}
+              style={{ marginTop: "8px", background: "linear-gradient(135deg, #0b5e58 0%, #0f7670 100%)", color: "white", padding: "10px 20px", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "16px", fontWeight: "500", opacity: isLoading || otp.length < 6 ? 0.7 : 1 }}
+            >
+              {isLoading ? "Verifying..." : "Verify"}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setShowMfa(false); setOtp(""); setMfaToken(""); setErrorMessage(""); }}
+              style={{ marginTop: 10, background: "none", border: "none", color: "#0b5e58", cursor: "pointer", fontSize: 14 }}
+            >
+              Back to login
+            </button>
+          </form>
+        ) : !showForgotPassword ? (
           <form onSubmit={handleSubmit(onSubmit)} className="login-form">
             {errorMessage && (
               <div className="error-text" style={{ marginBottom: "1rem" }}>

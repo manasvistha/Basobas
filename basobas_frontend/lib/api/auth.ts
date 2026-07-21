@@ -63,6 +63,26 @@ export const login = async ( loginData : any ) => {
     }
 }
 
+export const verifyLoginMfa = async (mfaToken: string, otp: string) => {
+    const response = await axios.post(API.AUTH.VERIFY_MFA, { mfaToken, otp });
+    return response.data;
+};
+
+export const mfaSetup = async () => {
+    const response = await axios.post(API.AUTH.MFA_SETUP);
+    return response.data as { success: boolean; otpauthUrl: string; qrDataUrl: string; secret: string };
+};
+
+export const mfaEnable = async (otp: string) => {
+    const response = await axios.post(API.AUTH.MFA_ENABLE, { otp });
+    return response.data;
+};
+
+export const mfaDisable = async (otp: string) => {
+    const response = await axios.post(API.AUTH.MFA_DISABLE, { otp });
+    return response.data;
+};
+
 export const exportMyData = async () => {
     // Download the authenticated user's own data as a JSON Blob.
     const response = await axios.get(API.AUTH.EXPORT_DATA, { responseType: 'blob' });

@@ -11,6 +11,8 @@ export interface IUser extends Document {
   password: string;
   profilePicture?: string;
   role: 'user' | 'admin';
+  mfaEnabled: boolean;
+  mfaSecret?: string;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(password: string): Promise<boolean>;
@@ -51,6 +53,13 @@ const UserSchema: Schema = new Schema<IUser>(
       enum: ["user", "admin"],
       default: "user",
     },
+    mfaEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    mfaSecret: {
+      type: String,
+    },
   },
   {
     timestamps: true,
@@ -63,6 +72,7 @@ const UserSchema: Schema = new Schema<IUser>(
         delete response._id;
         delete response.__v;
         delete response.password;
+        delete response.mfaSecret;
         return response;
       },
     },
