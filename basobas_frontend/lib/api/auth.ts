@@ -63,6 +63,12 @@ export const login = async ( loginData : any ) => {
     }
 }
 
+export const exportMyData = async () => {
+    // Download the authenticated user's own data as a JSON Blob.
+    const response = await axios.get(API.AUTH.EXPORT_DATA, { responseType: 'blob' });
+    return response.data as Blob;
+};
+
 export const getProfile = async () => {
     try {
         console.log('Getting user profile');

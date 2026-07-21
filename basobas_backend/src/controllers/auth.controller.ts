@@ -1,10 +1,20 @@
 import { Request, Response } from "express";
 import { AuthService } from "../services/auth.service";
 import { UserService } from "../services/user.service";
+import { PropertyService } from "../services/property.service";
+import { BookingService } from "../services/booking.service";
+import { FavoriteService } from "../services/favorite.service";
+import { NotificationService } from "../services/notification.service";
+import { ConversationService } from "../services/conversation.service";
 import { registerDTO, loginDTO } from "../dtos/user.dto";
 
 const authService = new AuthService();
 const userService = new UserService();
+const propertyService = new PropertyService();
+const bookingService = new BookingService();
+const favoriteService = new FavoriteService();
+const notificationService = new NotificationService();
+const conversationService = new ConversationService();
 
 export class AuthController {
   // src/controllers/auth.controller.ts
@@ -118,6 +128,63 @@ export class AuthController {
       return res.status(500).json({
         success: false,
         message: error.message || "Failed to get profile"
+      });
+    }
+  }
+
+  // Export all of the authenticated user's own data (privacy: "download my data").
+  // Uses the id from the JWT only — never a URL param — so no user can export
+  // another user's data (no IDOR). Passwords are never included.
+  async exportMyData(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user.id;
+
+      const [
+        profile,
+        properties,
+        bookings,
+        bookingRequests,
+        favorites,
+        notifications,
+        conversations,
+      ] = await Promise.all([
+        authService.getUserById(userId),
+        propertyService.getPropertiesByOwner(userId),
+        bookingService.getBookingsByUser(userId),
+        bookingService.getOwnerBookingRequests(userId),
+        favoriteService.getUserFavorites(userId),
+        notificationService.getNotificationsByUser(userId, 1, 100000),
+        conversationService.getConversationsByUser(userId),
+      ]);
+
+      if (!profile) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      const exportPayload = {
+        meta: {
+          format: "basobas-user-data-export/v1",
+          exportedAt: new Date().toISOString(),
+          userId,
+        },
+        profile,
+        properties,
+        bookings,
+        bookingRequests,
+        favorites,
+        notifications: (notifications as any)?.data ?? notifications,
+        conversations,
+      };
+
+      const filename = `basobas-data-${new Date().toISOString().slice(0, 10)}.json`;
+      res.setHeader("Content-Type", "application/json");
+      res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+      return res.status(200).send(JSON.stringify(exportPayload, null, 2));
+    } catch (error: any) {
+      console.error("Export Data Error:", error.message);
+      return res.status(500).json({
+        success: false,
+        message: error.message || "Failed to export data",
       });
     }
   }

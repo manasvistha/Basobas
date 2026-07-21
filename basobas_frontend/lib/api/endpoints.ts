@@ -3,6 +3,7 @@ export const API = {
     REGISTER: '/api/auth/register',
     LOGIN: '/api/auth/login',
    PROFILE: '/api/auth/profile',
+  EXPORT_DATA: '/api/auth/export-data',
   UPDATE_PROFILE: (id: string) => `/api/auth/${id}`,
   REQUEST_PASSWORD_RESET: '/api/auth/request-password-reset',
         RESET_PASSWORD: (token: string) => `/api/auth/reset-password/${token}`,

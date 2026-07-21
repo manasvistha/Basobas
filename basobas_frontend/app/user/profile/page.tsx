@@ -4,8 +4,9 @@ import { useEffect, useState, useMemo } from "react";
 import BackPillLink from "@/components/ui/BackPillLink";
 import axios from "@/lib/api/axios";
 import { API } from "@/lib/api/endpoints";
-import { getProfile, updateProfile } from "@/lib/api/auth";
+import { getProfile, updateProfile, exportMyData } from "@/lib/api/auth";
 import { getCurrentUser, getImageUrl } from "@/lib/utils/auth-utils";
+import { Button } from "@/components/ui";
 
 type ProfileUser = {
   id?: string;
@@ -30,6 +31,7 @@ export default function UserProfilePage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [user, setUser] = useState<ProfileUser | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   const fallbackAvatar = useMemo(() => {
     const displayName = user?.name || "User";
@@ -119,6 +121,28 @@ export default function UserProfilePage() {
       setError(err?.message || "Failed to update profile");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleExportData = async () => {
+    setExporting(true);
+    setError("");
+    setMessage("");
+    try {
+      const blob = await exportMyData();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `basobas-my-data-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setMessage("Your data has been downloaded.");
+    } catch (err: any) {
+      setError(err?.message || "Failed to export your data");
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -452,6 +476,29 @@ export default function UserProfilePage() {
             {isSaving ? "Saving..." : "Save Changes"}
           </button>
         </form>
+        </div>
+
+        {/* Privacy & Data */}
+        <div
+          style={{
+            marginTop: "1.5rem",
+            backgroundColor: "#ffffff",
+            border: "1px solid #e6e9ef",
+            borderRadius: "0.75rem",
+            padding: "1.5rem",
+            boxShadow: "0 8px 24px rgba(15,23,42,0.06)",
+          }}
+        >
+          <h3 style={{ fontSize: "1.125rem", fontWeight: "600", marginBottom: "0.5rem" }}>
+            Privacy &amp; Data
+          </h3>
+          <p style={{ color: "#64748b", marginBottom: "1rem" }}>
+            Download a copy of your BasoBas data &mdash; your profile, properties, bookings,
+            favorites, notifications, and conversations &mdash; as a JSON file.
+          </p>
+          <Button variant="secondary" onClick={handleExportData} disabled={exporting}>
+            {exporting ? "Preparing…" : "Download my data"}
+          </Button>
         </div>
       </main>
       </div>

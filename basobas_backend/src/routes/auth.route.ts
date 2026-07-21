@@ -15,6 +15,7 @@ router.post("/login", authController.login);
 // Protected routes (require JWT token)
 router.get("/profile", authorize, authController.getProfile);
 router.get("/current-user", authorize, authController.getProfile); // Alias for compatibility
+router.get("/export-data", authorize, authController.exportMyData);
 router.post("/upload-photo", authorize, uploadProfilePicture.single('photo'), authController.uploadPhoto);
 router.post("/user", authorize, requireAdmin, uploadProfilePicture.single('photo'), authController.createUser);
 router.put("/:id", authorize, uploadProfilePicture.single('photo'), authController.updateUser);
