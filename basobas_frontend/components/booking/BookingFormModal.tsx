@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createBooking, TenantInfo, PaymentInfo } from "@/lib/api/booking";
+import { createBooking, TenantInfo } from "@/lib/api/booking";
 import { Button, Input, Label, Textarea } from "@/components/ui";
 
 type PropertyMinimal = { _id: string; title?: string; price?: number };
@@ -11,22 +11,10 @@ export default function BookingFormModal({ property, onClose, onSuccess }: { pro
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
-  const [isPaying, setIsPaying] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const convertToNpr = async (amountUsd: number) => {
-    try {
-      const res = await fetch(`https://api.exchangerate.host/convert?from=USD&to=NPR&amount=${amountUsd}`);
-      const data = await res.json();
-      if (data && typeof data.result === 'number') return data.result as number;
-    } catch (e) {
-      console.error('FX error', e);
-    }
-    // fallback: use a reasonable default but not hard-coded 135/140 — use 137
-    return Number((amountUsd * 137).toFixed(0));
-  };
-
-  const handlePayAndBook = async () => {
+  const handleBook = async () => {
     if (!property) return;
     setError(null);
     if (!name || !phone) {
@@ -34,32 +22,18 @@ export default function BookingFormModal({ property, onClose, onSuccess }: { pro
       return;
     }
 
-    setIsPaying(true);
+    setIsSubmitting(true);
     try {
-      const priceUsd = Number(property.price || 0);
-      const amountNpr = await convertToNpr(priceUsd);
-
-      // Simulate Khalti-like payment flow (demo)
-      const txnId = `demo-khalti-${Date.now()}`;
-      const payment: PaymentInfo = {
-        method: 'khalti-demo',
-        amount: amountNpr,
-        currency: 'NPR',
-        status: 'success',
-        transactionId: txnId,
-        meta: { phone }
-      };
-
       const tenantInfo: TenantInfo = { name, email, phone };
 
-      const booking = await createBooking({ propertyId: property._id, message, tenantInfo, payment });
+      const booking = await createBooking({ propertyId: property._id, message, tenantInfo });
       if (onSuccess) onSuccess(booking);
       onClose();
     } catch (e: any) {
       console.error(e);
       setError(e?.response?.data?.error || e?.message || 'Failed to create booking');
     } finally {
-      setIsPaying(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -126,8 +100,8 @@ export default function BookingFormModal({ property, onClose, onSuccess }: { pro
 
         <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
           <Button variant="secondary" onClick={onClose} style={{ flex: 1 }}>Cancel</Button>
-          <Button variant="primary" onClick={handlePayAndBook} disabled={isPaying} style={{ flex: 1 }}>
-            {isPaying ? 'Processing…' : 'Pay & Book'}
+          <Button variant="primary" onClick={handleBook} disabled={isSubmitting} style={{ flex: 1 }}>
+            {isSubmitting ? 'Booking…' : 'Book'}
           </Button>
         </div>
       </div>
