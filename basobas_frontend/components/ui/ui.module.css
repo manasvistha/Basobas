@@ -106,6 +106,12 @@
 .inputInvalid { border-color: var(--color-error); }
 .inputInvalid:focus { box-shadow: 0 0 0 3px var(--color-error-soft); }
 
+.textarea {
+  min-height: 92px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
 /* ---------- Label ---------- */
 .label {
   display: block;
