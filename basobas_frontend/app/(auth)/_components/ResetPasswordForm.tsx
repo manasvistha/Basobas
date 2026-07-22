@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { strongPasswordSchema } from "@/lib/passwordPolicy";
+import PasswordStrengthMeter from "@/components/ui/PasswordStrengthMeter";
 
 const ResetPasswordSchema = z.object({
     newPassword: strongPasswordSchema,
@@ -24,9 +25,10 @@ interface ResetPasswordFormProps {
 
 export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     const router = useRouter();
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ResetPasswordDTO>({
+    const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<ResetPasswordDTO>({
         resolver: zodResolver(ResetPasswordSchema)
     });
+    const newPasswordValue = watch("newPassword") || "";
 
     const onSubmit = async (data: ResetPasswordDTO) => {
         if (!token) {
@@ -97,6 +99,7 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
                             {errors.newPassword && (
                                 <p className="error-text">{errors.newPassword.message}</p>
                             )}
+                            <PasswordStrengthMeter password={newPasswordValue} />
                         </div>
                     </div>
 

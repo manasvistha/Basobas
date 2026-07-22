@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginData } from "../schema";
 import { login as loginUser, requestPasswordReset, verifyLoginMfa, changeExpiredPassword } from "@/lib/api/auth";
 import { isStrongPassword, PASSWORD_MIN_LENGTH } from "@/lib/passwordPolicy";
+import PasswordStrengthMeter from "@/components/ui/PasswordStrengthMeter";
 import { useState } from "react";
 import styles from "./login_form.module.css";
 import z from "zod";
@@ -236,6 +237,7 @@ export default function LoginForm() {
                   onChange={(e) => setNewPassword(e.target.value)}
                   autoFocus
                 />
+                <PasswordStrengthMeter password={newPassword} />
               </div>
             </div>
             <div className="form-row">

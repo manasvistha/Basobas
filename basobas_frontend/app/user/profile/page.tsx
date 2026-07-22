@@ -7,6 +7,7 @@ import { API } from "@/lib/api/endpoints";
 import { getProfile, updateProfile, exportMyData, mfaSetup, mfaEnable, mfaDisable } from "@/lib/api/auth";
 import { getCurrentUser, getImageUrl } from "@/lib/utils/auth-utils";
 import { Button } from "@/components/ui";
+import PasswordStrengthMeter from "@/components/ui/PasswordStrengthMeter";
 
 type ProfileUser = {
   id?: string;
@@ -479,6 +480,7 @@ export default function UserProfilePage() {
                 fontSize: "0.875rem"
               }}
             />
+            <PasswordStrengthMeter password={password} />
           </div>
 
           <div style={{ display: "grid", gap: 8 }}>
