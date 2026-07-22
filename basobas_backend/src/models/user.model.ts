@@ -14,6 +14,7 @@ export interface IUser extends Document {
   mfaEnabled: boolean;
   mfaSecret?: string;
   passwordHistory?: string[];
+  passwordChangedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(password: string): Promise<boolean>;
@@ -64,6 +65,10 @@ const UserSchema: Schema = new Schema<IUser>(
     passwordHistory: {
       type: [String],
       default: [],
+    },
+    passwordChangedAt: {
+      type: Date,
+      default: Date.now,
     },
   },
   {

@@ -91,6 +91,21 @@ export class AuthController {
         });
       }
 
+      // 2b. If the password has expired, issue a short-lived change token and
+      //     require the client to set a new password before logging in.
+      if (result.passwordExpired) {
+        const changeToken = jwt.sign(
+          { id: result.userId, purpose: "password-change" },
+          JWT_SECRET,
+          { expiresIn: "10m" }
+        );
+        return res.status(200).json({
+          success: true,
+          passwordExpired: true,
+          changeToken,
+        });
+      }
+
       console.log('✅ Login successful for user:', (result.user as any).id);
       console.log('📝 Token generated (first 20 chars):', result.token.substring(0, 20) + '...');
 
@@ -133,9 +148,44 @@ export class AuthController {
       }
 
       const result = await authService.completeMfaLogin(decoded.id, String(otp));
+      if (result.passwordExpired) {
+        const changeToken = jwt.sign(
+          { id: result.userId, purpose: "password-change" },
+          JWT_SECRET,
+          { expiresIn: "10m" }
+        );
+        return res.status(200).json({ success: true, passwordExpired: true, changeToken });
+      }
       return res.status(200).json({ success: true, token: result.token, data: result.user });
     } catch (error: any) {
       return res.status(401).json({ success: false, message: error.message || "MFA verification failed" });
+    }
+  }
+
+  // Set a new password when the current one has expired (uses the change token
+  // issued by /login or /login/verify-mfa), then issue a real session token.
+  async changeExpiredPassword(req: Request, res: Response) {
+    try {
+      const { changeToken, newPassword } = req.body || {};
+      if (!changeToken || !newPassword) {
+        return res.status(400).json({ success: false, message: "changeToken and newPassword are required" });
+      }
+
+      let decoded: any;
+      try {
+        decoded = jwt.verify(changeToken, JWT_SECRET);
+      } catch {
+        return res.status(401).json({ success: false, message: "Session expired, please log in again" });
+      }
+
+      if (decoded?.purpose !== "password-change" || !decoded?.id) {
+        return res.status(401).json({ success: false, message: "Invalid change token" });
+      }
+
+      const result = await authService.changeExpiredPassword(decoded.id, String(newPassword));
+      return res.status(200).json({ success: true, token: result.token, data: result.user });
+    } catch (error: any) {
+      return res.status(400).json({ success: false, message: error.message || "Failed to change password" });
     }
   }
 

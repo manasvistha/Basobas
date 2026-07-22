@@ -68,6 +68,11 @@ export const verifyLoginMfa = async (mfaToken: string, otp: string) => {
     return response.data;
 };
 
+export const changeExpiredPassword = async (changeToken: string, newPassword: string) => {
+    const response = await axios.post(API.AUTH.CHANGE_EXPIRED, { changeToken, newPassword });
+    return response.data;
+};
+
 export const mfaSetup = async () => {
     const response = await axios.post(API.AUTH.MFA_SETUP);
     return response.data as { success: boolean; otpauthUrl: string; qrDataUrl: string; secret: string };
