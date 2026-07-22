@@ -6,11 +6,11 @@ import { resetPassword } from "@/lib/api/auth";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { strongPasswordSchema } from "@/lib/passwordPolicy";
+import PasswordStrengthMeter from "@/components/ui/PasswordStrengthMeter";
 
 const ResetPasswordSchema = z.object({
-    newPassword: z.string()
-        .min(6, "Password must be at least 6 characters")
-        .max(100, "Password must be less than 100 characters"),
+    newPassword: strongPasswordSchema,
     confirmPassword: z.string()
 }).refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords don't match",
@@ -25,9 +25,10 @@ interface ResetPasswordFormProps {
 
 export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     const router = useRouter();
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ResetPasswordDTO>({
+    const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<ResetPasswordDTO>({
         resolver: zodResolver(ResetPasswordSchema)
     });
+    const newPasswordValue = watch("newPassword") || "";
 
     const onSubmit = async (data: ResetPasswordDTO) => {
         if (!token) {
@@ -98,6 +99,7 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
                             {errors.newPassword && (
                                 <p className="error-text">{errors.newPassword.message}</p>
                             )}
+                            <PasswordStrengthMeter password={newPasswordValue} />
                         </div>
                     </div>
 

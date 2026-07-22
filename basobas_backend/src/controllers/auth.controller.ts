@@ -1,10 +1,25 @@
 import { Request, Response } from "express";
 import { AuthService } from "../services/auth.service";
 import { UserService } from "../services/user.service";
+import { PropertyService } from "../services/property.service";
+import { BookingService } from "../services/booking.service";
+import { FavoriteService } from "../services/favorite.service";
+import { NotificationService } from "../services/notification.service";
+import { ConversationService } from "../services/conversation.service";
+import { MfaService } from "../services/mfa.service";
 import { registerDTO, loginDTO } from "../dtos/user.dto";
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../config";
+import { assertStrongPassword } from "../utils/password-policy";
 
 const authService = new AuthService();
 const userService = new UserService();
+const propertyService = new PropertyService();
+const bookingService = new BookingService();
+const favoriteService = new FavoriteService();
+const notificationService = new NotificationService();
+const conversationService = new ConversationService();
+const mfaService = new MfaService();
 
 export class AuthController {
   // src/controllers/auth.controller.ts
@@ -60,10 +75,40 @@ export class AuthController {
       
       // 2. Perform login via service
       const result = await authService.login(validatedData);
-      
+
+      // 2a. If MFA is enabled, don't issue the real token yet. Hand back a
+      //     short-lived MFA token; the client must call /login/verify-mfa.
+      if (result.mfaRequired) {
+        const mfaToken = jwt.sign(
+          { id: result.userId, purpose: "mfa" },
+          JWT_SECRET,
+          { expiresIn: "5m" }
+        );
+        return res.status(200).json({
+          success: true,
+          mfaRequired: true,
+          mfaToken,
+        });
+      }
+
+      // 2b. If the password has expired, issue a short-lived change token and
+      //     require the client to set a new password before logging in.
+      if (result.passwordExpired) {
+        const changeToken = jwt.sign(
+          { id: result.userId, purpose: "password-change" },
+          JWT_SECRET,
+          { expiresIn: "10m" }
+        );
+        return res.status(200).json({
+          success: true,
+          passwordExpired: true,
+          changeToken,
+        });
+      }
+
       console.log('✅ Login successful for user:', (result.user as any).id);
       console.log('📝 Token generated (first 20 chars):', result.token.substring(0, 20) + '...');
-      
+
       // 3. Return response - Flutter looks for 'token' and 'data'
       // result should be { user: IUser, token: string }
       // Note: authService.login already calls toJSON(), so result.user is already serialized
@@ -80,6 +125,104 @@ export class AuthController {
         message: error.message || "Login failed",
         error: error.message 
       });
+    }
+  }
+
+  // Second step of MFA login: exchange the short-lived mfaToken + OTP for a real JWT.
+  async verifyMfaLogin(req: Request, res: Response) {
+    try {
+      const { mfaToken, otp } = req.body || {};
+      if (!mfaToken || !otp) {
+        return res.status(400).json({ success: false, message: "mfaToken and otp are required" });
+      }
+
+      let decoded: any;
+      try {
+        decoded = jwt.verify(mfaToken, JWT_SECRET);
+      } catch {
+        return res.status(401).json({ success: false, message: "MFA session expired, please log in again" });
+      }
+
+      if (decoded?.purpose !== "mfa" || !decoded?.id) {
+        return res.status(401).json({ success: false, message: "Invalid MFA token" });
+      }
+
+      const result = await authService.completeMfaLogin(decoded.id, String(otp));
+      if (result.passwordExpired) {
+        const changeToken = jwt.sign(
+          { id: result.userId, purpose: "password-change" },
+          JWT_SECRET,
+          { expiresIn: "10m" }
+        );
+        return res.status(200).json({ success: true, passwordExpired: true, changeToken });
+      }
+      return res.status(200).json({ success: true, token: result.token, data: result.user });
+    } catch (error: any) {
+      return res.status(401).json({ success: false, message: error.message || "MFA verification failed" });
+    }
+  }
+
+  // Set a new password when the current one has expired (uses the change token
+  // issued by /login or /login/verify-mfa), then issue a real session token.
+  async changeExpiredPassword(req: Request, res: Response) {
+    try {
+      const { changeToken, newPassword } = req.body || {};
+      if (!changeToken || !newPassword) {
+        return res.status(400).json({ success: false, message: "changeToken and newPassword are required" });
+      }
+
+      let decoded: any;
+      try {
+        decoded = jwt.verify(changeToken, JWT_SECRET);
+      } catch {
+        return res.status(401).json({ success: false, message: "Session expired, please log in again" });
+      }
+
+      if (decoded?.purpose !== "password-change" || !decoded?.id) {
+        return res.status(401).json({ success: false, message: "Invalid change token" });
+      }
+
+      const result = await authService.changeExpiredPassword(decoded.id, String(newPassword));
+      return res.status(200).json({ success: true, token: result.token, data: result.user });
+    } catch (error: any) {
+      return res.status(400).json({ success: false, message: error.message || "Failed to change password" });
+    }
+  }
+
+  // Begin MFA enrollment — returns otpauth URL + QR data-url to scan.
+  async mfaSetup(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user.id;
+      const data = await mfaService.generateSetup(userId);
+      return res.status(200).json({ success: true, ...data });
+    } catch (error: any) {
+      return res.status(400).json({ success: false, message: error.message || "Failed to start MFA setup" });
+    }
+  }
+
+  // Confirm enrollment with the first code.
+  async mfaEnable(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user.id;
+      const { otp } = req.body || {};
+      if (!otp) return res.status(400).json({ success: false, message: "otp is required" });
+      const data = await mfaService.enable(userId, String(otp));
+      return res.status(200).json({ success: true, message: "Two-factor authentication enabled", ...data });
+    } catch (error: any) {
+      return res.status(400).json({ success: false, message: error.message || "Failed to enable MFA" });
+    }
+  }
+
+  // Turn MFA off (requires a current code).
+  async mfaDisable(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user.id;
+      const { otp } = req.body || {};
+      if (!otp) return res.status(400).json({ success: false, message: "otp is required" });
+      const data = await mfaService.disable(userId, String(otp));
+      return res.status(200).json({ success: true, message: "Two-factor authentication disabled", ...data });
+    } catch (error: any) {
+      return res.status(400).json({ success: false, message: error.message || "Failed to disable MFA" });
     }
   }
 
@@ -118,6 +261,63 @@ export class AuthController {
       return res.status(500).json({
         success: false,
         message: error.message || "Failed to get profile"
+      });
+    }
+  }
+
+  // Export all of the authenticated user's own data (privacy: "download my data").
+  // Uses the id from the JWT only — never a URL param — so no user can export
+  // another user's data (no IDOR). Passwords are never included.
+  async exportMyData(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user.id;
+
+      const [
+        profile,
+        properties,
+        bookings,
+        bookingRequests,
+        favorites,
+        notifications,
+        conversations,
+      ] = await Promise.all([
+        authService.getUserById(userId),
+        propertyService.getPropertiesByOwner(userId),
+        bookingService.getBookingsByUser(userId),
+        bookingService.getOwnerBookingRequests(userId),
+        favoriteService.getUserFavorites(userId),
+        notificationService.getNotificationsByUser(userId, 1, 100000),
+        conversationService.getConversationsByUser(userId),
+      ]);
+
+      if (!profile) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      const exportPayload = {
+        meta: {
+          format: "basobas-user-data-export/v1",
+          exportedAt: new Date().toISOString(),
+          userId,
+        },
+        profile,
+        properties,
+        bookings,
+        bookingRequests,
+        favorites,
+        notifications: (notifications as any)?.data ?? notifications,
+        conversations,
+      };
+
+      const filename = `basobas-data-${new Date().toISOString().slice(0, 10)}.json`;
+      res.setHeader("Content-Type", "application/json");
+      res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+      return res.status(200).send(JSON.stringify(exportPayload, null, 2));
+    } catch (error: any) {
+      console.error("Export Data Error:", error.message);
+      return res.status(500).json({
+        success: false,
+        message: error.message || "Failed to export data",
       });
     }
   }
@@ -220,6 +420,15 @@ export class AuthController {
       }
 
       const file = (req as any).file;
+
+      // Enforce the strong-password policy on any password change.
+      if (req.body?.password) {
+        try {
+          assertStrongPassword(req.body.password);
+        } catch (e: any) {
+          return res.status(400).json({ success: false, message: e.message });
+        }
+      }
 
       const updateData: any = {
         name: req.body?.name,

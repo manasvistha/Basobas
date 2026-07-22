@@ -1,10 +1,13 @@
 import { UserModel } from "../models/user.model";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import { authenticator } from "otplib";
 import { sendEmail } from "../config/email";
 import { JWT_SECRET } from "../config";
 import { HttpError } from "../errors/http-error";
 import { UserRepository } from "../repositories/user.repository";
+import { assertStrongPassword, isPasswordExpired } from "../utils/password-policy";
+import { isPasswordReused, nextPasswordHistory } from "../utils/password-history";
 const CLIENT_URL = process.env.CLIENT_URL as string;
 
 export class AuthService {
@@ -26,18 +29,81 @@ export class AuthService {
       throw new Error("Invalid credentials"); // Password wrong
     }
 
-    // 3. Generate JWT Token
+    // 3. If the account has MFA enabled, stop here — the controller will issue a
+    //    short-lived MFA token and the client must complete the second step.
+    if (user.mfaEnabled) {
+      return { mfaRequired: true as const, passwordExpired: false as const, userId: user._id.toString() };
+    }
+
+    // 4. If the password has expired, force a change before issuing a token.
+    if (isPasswordExpired(user.passwordChangedAt)) {
+      return { mfaRequired: false as const, passwordExpired: true as const, userId: user._id.toString() };
+    }
+
+    // 5. Generate JWT Token
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET || "fallback_secret",
       { expiresIn: "30d" }
     );
 
-    // 4. Return keys that match what our Controller and Flutter expect
+    // 6. Return keys that match what our Controller and Flutter expect
     return {
+      mfaRequired: false as const,
+      passwordExpired: false as const,
       user: user.toJSON(), // Converts _id to id and hides password
       token,
     };
+  }
+
+  // Second step of an MFA login: verify the TOTP code, then issue the real JWT.
+  async completeMfaLogin(userId: string, otp: string) {
+    const user = await UserModel.findById(userId);
+    if (!user || !user.mfaEnabled || !user.mfaSecret) {
+      throw new Error("MFA is not set up for this account");
+    }
+
+    const isValid = authenticator.check(String(otp).trim(), user.mfaSecret);
+    if (!isValid) {
+      throw new Error("Invalid authentication code");
+    }
+
+    // Even after 2FA, force a password change if it has expired.
+    if (isPasswordExpired(user.passwordChangedAt)) {
+      return { passwordExpired: true as const, userId: user._id.toString() };
+    }
+
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET || "fallback_secret",
+      { expiresIn: "30d" }
+    );
+
+    return { passwordExpired: false as const, user: user.toJSON(), token };
+  }
+
+  // Set a new password when the current one has expired, then issue the real JWT.
+  async changeExpiredPassword(userId: string, newPassword: string) {
+    assertStrongPassword(newPassword);
+    const user = await UserModel.findById(userId);
+    if (!user) throw new Error("User not found");
+    if (await isPasswordReused(user, newPassword)) {
+      throw new Error("You cannot reuse a recent password. Please choose a new one.");
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const passwordHistory = nextPasswordHistory(user.password, user.passwordHistory, hashedPassword);
+    await UserModel.findByIdAndUpdate(userId, {
+      password: hashedPassword,
+      passwordHistory,
+      passwordChangedAt: new Date(),
+    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET || "fallback_secret",
+      { expiresIn: "30d" }
+    );
+    const updated = await UserModel.findById(userId);
+    return { user: (updated || user).toJSON(), token };
   }
 
   async register(data: any) {
@@ -99,16 +165,28 @@ export class AuthService {
             if (!token || !newPassword) {
                 throw new HttpError(400, "Token and new password are required");
             }
+            try {
+                assertStrongPassword(newPassword);
+            } catch (e: any) {
+                throw new HttpError(400, e.message);
+            }
             const decoded: any = jwt.verify(token, JWT_SECRET);
             const userId = decoded.id;
-            const user = await this.userRepository.getUserById(userId);
+            const user = await UserModel.findById(userId);
             if (!user) {
                 throw new HttpError(404, "User not found");
             }
+            if (await isPasswordReused(user, newPassword)) {
+                throw new HttpError(400, "You cannot reuse a recent password. Please choose a new one.");
+            }
             const hashedPassword = await bcrypt.hash(newPassword, 10);
-            await UserModel.findByIdAndUpdate(userId, { password: hashedPassword });
-            return user;
+            const passwordHistory = nextPasswordHistory(user.password, user.passwordHistory, hashedPassword);
+            await UserModel.findByIdAndUpdate(userId, { password: hashedPassword, passwordHistory, passwordChangedAt: new Date() });
+            return user.toJSON();
         } catch (error) {
+            // Preserve explicit HttpErrors (e.g. weak password, missing fields);
+            // only unexpected failures (bad/expired JWT) become the generic message.
+            if (error instanceof HttpError) throw error;
             throw new HttpError(400, "Invalid or expired token");
         }
     }

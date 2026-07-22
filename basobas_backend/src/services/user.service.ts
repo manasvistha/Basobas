@@ -1,5 +1,6 @@
 import { UserModel } from "../models/user.model";
 import bcrypt from "bcryptjs";
+import { isPasswordReused, nextPasswordHistory } from "../utils/password-history";
 
 export class UserService {
   async createUser(data: any) {
@@ -49,8 +50,18 @@ export class UserService {
     }
 
     if (updateData.password) {
-      const salt = await bcrypt.genSalt(10);
-      updateData.password = await bcrypt.hash(updateData.password, salt);
+      const existing = await UserModel.findById(userId);
+      if (existing) {
+        const plain = updateData.password;
+        if (await isPasswordReused(existing, plain)) {
+          throw new Error("You cannot reuse a recent password. Please choose a new one.");
+        }
+        const salt = await bcrypt.genSalt(10);
+        const newHash = await bcrypt.hash(plain, salt);
+        updateData.password = newHash;
+        updateData.passwordHistory = nextPasswordHistory(existing.password, existing.passwordHistory, newHash);
+        updateData.passwordChangedAt = new Date();
+      }
     }
 
     const user = await UserModel.findByIdAndUpdate(userId, updateData, {
