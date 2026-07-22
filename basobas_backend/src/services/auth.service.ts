@@ -6,6 +6,7 @@ import { sendEmail } from "../config/email";
 import { JWT_SECRET } from "../config";
 import { HttpError } from "../errors/http-error";
 import { UserRepository } from "../repositories/user.repository";
+import { assertStrongPassword } from "../utils/password-policy";
 const CLIENT_URL = process.env.CLIENT_URL as string;
 
 export class AuthService {
@@ -128,6 +129,11 @@ export class AuthService {
             if (!token || !newPassword) {
                 throw new HttpError(400, "Token and new password are required");
             }
+            try {
+                assertStrongPassword(newPassword);
+            } catch (e: any) {
+                throw new HttpError(400, e.message);
+            }
             const decoded: any = jwt.verify(token, JWT_SECRET);
             const userId = decoded.id;
             const user = await this.userRepository.getUserById(userId);
@@ -138,6 +144,9 @@ export class AuthService {
             await UserModel.findByIdAndUpdate(userId, { password: hashedPassword });
             return user;
         } catch (error) {
+            // Preserve explicit HttpErrors (e.g. weak password, missing fields);
+            // only unexpected failures (bad/expired JWT) become the generic message.
+            if (error instanceof HttpError) throw error;
             throw new HttpError(400, "Invalid or expired token");
         }
     }

@@ -10,6 +10,7 @@ import { MfaService } from "../services/mfa.service";
 import { registerDTO, loginDTO } from "../dtos/user.dto";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
+import { assertStrongPassword } from "../utils/password-policy";
 
 const authService = new AuthService();
 const userService = new UserService();
@@ -369,6 +370,15 @@ export class AuthController {
       }
 
       const file = (req as any).file;
+
+      // Enforce the strong-password policy on any password change.
+      if (req.body?.password) {
+        try {
+          assertStrongPassword(req.body.password);
+        } catch (e: any) {
+          return res.status(400).json({ success: false, message: e.message });
+        }
+      }
 
       const updateData: any = {
         name: req.body?.name,
