@@ -5,6 +5,7 @@ export const API = {
    PROFILE: '/api/auth/profile',
   EXPORT_DATA: '/api/auth/export-data',
   VERIFY_MFA: '/api/auth/login/verify-mfa',
+  CHANGE_EXPIRED: '/api/auth/password/change-expired',
   MFA_SETUP: '/api/auth/mfa/setup',
   MFA_ENABLE: '/api/auth/mfa/enable',
   MFA_DISABLE: '/api/auth/mfa/disable',

@@ -60,6 +60,7 @@ export class UserService {
         const newHash = await bcrypt.hash(plain, salt);
         updateData.password = newHash;
         updateData.passwordHistory = nextPasswordHistory(existing.password, existing.passwordHistory, newHash);
+        updateData.passwordChangedAt = new Date();
       }
     }
 

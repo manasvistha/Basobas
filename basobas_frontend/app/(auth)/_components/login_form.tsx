@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginData } from "../schema";
-import { login as loginUser, requestPasswordReset, verifyLoginMfa } from "@/lib/api/auth";
+import { login as loginUser, requestPasswordReset, verifyLoginMfa, changeExpiredPassword } from "@/lib/api/auth";
+import { isStrongPassword, PASSWORD_MIN_LENGTH } from "@/lib/passwordPolicy";
 import { useState } from "react";
 import styles from "./login_form.module.css";
 import z from "zod";
@@ -26,6 +27,10 @@ export default function LoginForm() {
   const [showMfa, setShowMfa] = useState(false);
   const [mfaToken, setMfaToken] = useState("");
   const [otp, setOtp] = useState("");
+  const [showPasswordExpired, setShowPasswordExpired] = useState(false);
+  const [changeToken, setChangeToken] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
   const {
     register,
@@ -74,6 +79,16 @@ export default function LoginForm() {
         return;
       }
 
+      // If the password has expired, switch to the forced-change step.
+      if (result?.passwordExpired && result?.changeToken) {
+        setChangeToken(result.changeToken);
+        setNewPassword("");
+        setConfirmNewPassword("");
+        setShowPasswordExpired(true);
+        setIsLoading(false);
+        return;
+      }
+
       const success =
         result &&
         (result.success ||
@@ -99,6 +114,15 @@ export default function LoginForm() {
     setErrorMessage("");
     try {
       const result = await verifyLoginMfa(mfaToken, otp.trim());
+      if (result?.passwordExpired && result?.changeToken) {
+        setChangeToken(result.changeToken);
+        setNewPassword("");
+        setConfirmNewPassword("");
+        setShowMfa(false);
+        setShowPasswordExpired(true);
+        setIsLoading(false);
+        return;
+      }
       if (result?.token || result?.data) {
         finishLogin(result);
       } else {
@@ -107,6 +131,35 @@ export default function LoginForm() {
     } catch (error: any) {
       setErrorMessage(
         error?.response?.data?.message || error?.message || "Invalid authentication code"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onChangeExpiredPassword = async () => {
+    setErrorMessage("");
+    if (!isStrongPassword(newPassword)) {
+      setErrorMessage(
+        `Password must be at least ${PASSWORD_MIN_LENGTH} characters and include an uppercase letter, a lowercase letter, a number, and a special character.`
+      );
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      setErrorMessage("Passwords do not match.");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const result = await changeExpiredPassword(changeToken, newPassword);
+      if (result?.token || result?.data) {
+        finishLogin(result);
+      } else {
+        setErrorMessage(result?.message || "Failed to update password");
+      }
+    } catch (error: any) {
+      setErrorMessage(
+        error?.response?.data?.message || error?.message || "Failed to update password"
       );
     } finally {
       setIsLoading(false);
@@ -143,9 +196,9 @@ export default function LoginForm() {
       </div>
 
       <div className="login-box" style={{ position: 'relative', background: "linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(239, 250, 247, 0.65))", border: "1px solid rgba(170, 205, 196, 0.5)", boxShadow: "0 22px 55px -30px rgba(8, 53, 49, 0.35)" }}>
-        <h1 style={{ color: "#0b5e58" }}>{showMfa ? "Two-step verification" : showForgotPassword ? "Reset Password" : "Welcome to BasoBas"}</h1>
+        <h1 style={{ color: "#0b5e58" }}>{showPasswordExpired ? "Update your password" : showMfa ? "Two-step verification" : showForgotPassword ? "Reset Password" : "Welcome to BasoBas"}</h1>
 
-        {!showForgotPassword && !showMfa && (
+        {!showForgotPassword && !showMfa && !showPasswordExpired && (
           <button
             onClick={() => setShowForgotPassword(true)}
             className="text-teal-500 hover:underline text-sm"
@@ -163,7 +216,48 @@ export default function LoginForm() {
           </button>
         )}
 
-        {showMfa ? (
+        {showPasswordExpired ? (
+          <form onSubmit={(e) => { e.preventDefault(); void onChangeExpiredPassword(); }} className="login-form">
+            {errorMessage && (
+              <div className="error-text" style={{ marginBottom: "1rem" }}>
+                {errorMessage}
+              </div>
+            )}
+            <p style={{ fontSize: 14, color: "#475569", marginBottom: 4 }}>
+              Your password has expired. Please set a new one to continue.
+            </p>
+            <div className="form-row">
+              <label>New password</label>
+              <div className="field">
+                <input
+                  type="password"
+                  placeholder="New password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  autoFocus
+                />
+              </div>
+            </div>
+            <div className="form-row">
+              <label>Confirm</label>
+              <div className="field">
+                <input
+                  type="password"
+                  placeholder="Confirm new password"
+                  value={confirmNewPassword}
+                  onChange={(e) => setConfirmNewPassword(e.target.value)}
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              style={{ marginTop: "8px", background: "linear-gradient(135deg, #0b5e58 0%, #0f7670 100%)", color: "white", padding: "10px 20px", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "16px", fontWeight: "500", opacity: isLoading ? 0.7 : 1 }}
+            >
+              {isLoading ? "Updating..." : "Update password"}
+            </button>
+          </form>
+        ) : showMfa ? (
           <form onSubmit={(e) => { e.preventDefault(); void onVerifyMfa(); }} className="login-form">
             {errorMessage && (
               <div className="error-text" style={{ marginBottom: "1rem" }}>
