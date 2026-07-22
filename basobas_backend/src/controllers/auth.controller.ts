@@ -11,6 +11,7 @@ import { registerDTO, loginDTO } from "../dtos/user.dto";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
 import { assertStrongPassword } from "../utils/password-policy";
+import { recordFailedLogin, clearFailedLogins } from "../middlewears/failed-login.middlewears";
 
 const authService = new AuthService();
 const userService = new UserService();
@@ -76,6 +77,9 @@ export class AuthController {
       // 2. Perform login via service
       const result = await authService.login(validatedData);
 
+      // Credentials are valid at this point — reset the failed-attempt counter.
+      clearFailedLogins(req);
+
       // 2a. If MFA is enabled, don't issue the real token yet. Hand back a
       //     short-lived MFA token; the client must call /login/verify-mfa.
       if (result.mfaRequired) {
@@ -119,11 +123,14 @@ export class AuthController {
       });
     } catch (error: any) {
       console.error("Login Error Details:", error.message);
-      
-      return res.status(401).json({ 
+
+      // Failed authentication — count it toward the auto-block threshold.
+      recordFailedLogin(req);
+
+      return res.status(401).json({
         success: false,
         message: error.message || "Login failed",
-        error: error.message 
+        error: error.message
       });
     }
   }
@@ -148,6 +155,7 @@ export class AuthController {
       }
 
       const result = await authService.completeMfaLogin(decoded.id, String(otp));
+      clearFailedLogins(req);
       if (result.passwordExpired) {
         const changeToken = jwt.sign(
           { id: result.userId, purpose: "password-change" },
@@ -158,6 +166,7 @@ export class AuthController {
       }
       return res.status(200).json({ success: true, token: result.token, data: result.user });
     } catch (error: any) {
+      recordFailedLogin(req);
       return res.status(401).json({ success: false, message: error.message || "MFA verification failed" });
     }
   }
