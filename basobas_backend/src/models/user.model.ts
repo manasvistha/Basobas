@@ -13,6 +13,7 @@ export interface IUser extends Document {
   role: 'user' | 'admin';
   mfaEnabled: boolean;
   mfaSecret?: string;
+  passwordHistory?: string[];
   createdAt: Date;
   updatedAt: Date;
   comparePassword(password: string): Promise<boolean>;
@@ -60,6 +61,10 @@ const UserSchema: Schema = new Schema<IUser>(
     mfaSecret: {
       type: String,
     },
+    passwordHistory: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,
@@ -73,6 +78,7 @@ const UserSchema: Schema = new Schema<IUser>(
         delete response.__v;
         delete response.password;
         delete response.mfaSecret;
+        delete response.passwordHistory;
         return response;
       },
     },
