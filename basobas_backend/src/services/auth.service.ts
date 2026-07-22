@@ -9,6 +9,7 @@ import { UserRepository } from "../repositories/user.repository";
 import { assertStrongPassword, isPasswordExpired } from "../utils/password-policy";
 import { isPasswordReused, nextPasswordHistory } from "../utils/password-history";
 import { hashUserAgent, SESSION_TTL } from "../config/session";
+import { hashPassword, decrypt } from "../utils/crypto";
 const CLIENT_URL = process.env.CLIENT_URL as string;
 
 export class AuthService {
@@ -64,7 +65,7 @@ export class AuthService {
       throw new Error("MFA is not set up for this account");
     }
 
-    const isValid = authenticator.check(String(otp).trim(), user.mfaSecret);
+    const isValid = authenticator.check(String(otp).trim(), decrypt(user.mfaSecret));
     if (!isValid) {
       throw new Error("Invalid authentication code");
     }
@@ -91,7 +92,7 @@ export class AuthService {
     if (await isPasswordReused(user, newPassword)) {
       throw new Error("You cannot reuse a recent password. Please choose a new one.");
     }
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await hashPassword(newPassword);
     const passwordHistory = nextPasswordHistory(user.password, user.passwordHistory, hashedPassword);
     await UserModel.findByIdAndUpdate(userId, {
       password: hashedPassword,
@@ -180,7 +181,7 @@ export class AuthService {
             if (await isPasswordReused(user, newPassword)) {
                 throw new HttpError(400, "You cannot reuse a recent password. Please choose a new one.");
             }
-            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            const hashedPassword = await hashPassword(newPassword);
             const passwordHistory = nextPasswordHistory(user.password, user.passwordHistory, hashedPassword);
             await UserModel.findByIdAndUpdate(userId, { password: hashedPassword, passwordHistory, passwordChangedAt: new Date() });
             return user.toJSON();

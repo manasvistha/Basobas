@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { NextFunction } from "express";
 import bcrypt from "bcryptjs";
+import { hashPassword } from "../utils/crypto";
 
 // 1. Define the interface for the Document
 export interface IUser extends Document {
@@ -104,8 +105,7 @@ const UserSchema: Schema = new Schema<IUser>(
 UserSchema.pre<IUser>("save", async function () {
   if (!this.isModified("password")) return;
   try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+    this.password = await hashPassword(this.password);
   } catch (error: any) {
     throw error;
   }
