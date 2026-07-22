@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, RegisterData } from "@/lib/authSchema";
 import { register as registerUser } from "@/lib/api/auth";
 import { useState } from "react";
+import PasswordStrengthMeter from "@/components/ui/PasswordStrengthMeter";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -16,10 +17,12 @@ export default function RegisterForm() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<RegisterData>({
     resolver: zodResolver(registerSchema),
   });
+  const passwordValue = watch("password") || "";
 
   const onSubmit = async (data: RegisterData) => {
     setIsLoading(true);
@@ -126,6 +129,7 @@ export default function RegisterForm() {
               {errors.password && (
                 <p className="error-text">{errors.password.message}</p>
               )}
+              <PasswordStrengthMeter password={passwordValue} />
             </div>
           </div>
 
