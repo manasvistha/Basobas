@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { FavoriteController } from "../controllers/favorite.controller";
 import { authorize } from "../middlewears/authorized.middlewears";
+import { sensitiveLimiter } from "../middlewears/rate-limit.middlewears";
 
 const router = Router();
 const favoriteController = new FavoriteController();
@@ -12,7 +13,7 @@ const isFavorite = favoriteController.isFavorite.bind(favoriteController);
 const getUserFavorites = favoriteController.getUserFavorites.bind(favoriteController);
 
 // POST /api/favorite/:propertyId - Add to favorites
-router.post("/:propertyId", authorize, (req: Request, res: Response) => addFavorite(req, res));
+router.post("/:propertyId", sensitiveLimiter, authorize, (req: Request, res: Response) => addFavorite(req, res));
 
 // DELETE /api/favorite/:propertyId - Remove from favorites
 router.delete("/:propertyId", authorize, (req: Request, res: Response) => removeFavorite(req, res));

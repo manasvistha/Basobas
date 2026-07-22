@@ -3,6 +3,7 @@ import multer from "multer";
 import path from "path";
 import { PropertyController } from "../controllers/property.controller";
 import { authorize } from "../middlewears/authorized.middlewears";
+import { sensitiveLimiter } from "../middlewears/rate-limit.middlewears";
 
 const router = Router();
 const propertyController = new PropertyController();
@@ -38,7 +39,7 @@ const upload = multer({
   },
 });
 
-router.post("/", authorize, upload.array('images', 10), (req, res, next) => {
+router.post("/", sensitiveLimiter, authorize, upload.array('images', 10), (req, res, next) => {
   console.log('Property create route hit:', {
     body: req.body,
     files: req.files,
@@ -51,8 +52,8 @@ router.get("/my", authorize, propertyController.getMyProperties.bind(propertyCon
 router.get("/search", propertyController.searchByQuery.bind(propertyController));
 router.get("/filter", propertyController.filterProperties.bind(propertyController));
 router.get("/:id", propertyController.getPropertyById.bind(propertyController));
-router.put("/:id", authorize, upload.array('images', 10), propertyController.updateProperty.bind(propertyController));
-router.delete("/:id", authorize, propertyController.deleteProperty.bind(propertyController));
+router.put("/:id", sensitiveLimiter, authorize, upload.array('images', 10), propertyController.updateProperty.bind(propertyController));
+router.delete("/:id", sensitiveLimiter, authorize, propertyController.deleteProperty.bind(propertyController));
 
 // Admin routes
 import { AdminController } from "../controllers/admin.controller";
