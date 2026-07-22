@@ -6,11 +6,10 @@ import { resetPassword } from "@/lib/api/auth";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { strongPasswordSchema } from "@/lib/passwordPolicy";
 
 const ResetPasswordSchema = z.object({
-    newPassword: z.string()
-        .min(6, "Password must be at least 6 characters")
-        .max(100, "Password must be less than 100 characters"),
+    newPassword: strongPasswordSchema,
     confirmPassword: z.string()
 }).refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords don't match",

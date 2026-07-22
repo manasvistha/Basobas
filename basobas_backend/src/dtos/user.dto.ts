@@ -1,12 +1,13 @@
 import { z } from "zod";
+import { strongPasswordSchema } from "../utils/password-policy";
 
 // 1. REGISTRATION DTO
 // We use .omit() to exclude internal fields like id, role, and timestamps
 export const registerDTO = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email format"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPass: z.string().min(6, "Confirm password is required").optional(),
+  password: strongPasswordSchema,
+  confirmPass: z.string().optional(),
   username: z.string().min(3, "Username must be at least 3 characters").optional(),
 })
   .refine((data) => {
