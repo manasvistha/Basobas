@@ -218,7 +218,7 @@ export default function LoginForm() {
         )}
 
         {showPasswordExpired ? (
-          <form onSubmit={(e) => { e.preventDefault(); void onChangeExpiredPassword(); }} className="login-form">
+          <form key="expired" onSubmit={(e) => { e.preventDefault(); void onChangeExpiredPassword(); }} className="login-form">
             {errorMessage && (
               <div className="error-text" style={{ marginBottom: "1rem" }}>
                 {errorMessage}
@@ -260,7 +260,7 @@ export default function LoginForm() {
             </button>
           </form>
         ) : showMfa ? (
-          <form onSubmit={(e) => { e.preventDefault(); void onVerifyMfa(); }} className="login-form">
+          <form key="mfa" onSubmit={(e) => { e.preventDefault(); void onVerifyMfa(); }} className="login-form">
             {errorMessage && (
               <div className="error-text" style={{ marginBottom: "1rem" }}>
                 {errorMessage}
@@ -300,7 +300,7 @@ export default function LoginForm() {
             </button>
           </form>
         ) : !showForgotPassword ? (
-          <form onSubmit={handleSubmit(onSubmit)} className="login-form">
+          <form key="login" onSubmit={handleSubmit(onSubmit)} className="login-form">
             {errorMessage && (
               <div className="error-text" style={{ marginBottom: "1rem" }}>
                 {errorMessage}
@@ -360,7 +360,7 @@ export default function LoginForm() {
             </button>
           </form>
         ) : (
-          <form onSubmit={forgotPasswordForm.handleSubmit(onForgotPasswordSubmit)} className="login-form">
+          <form key="forgot" onSubmit={forgotPasswordForm.handleSubmit(onForgotPasswordSubmit)} className="login-form">
             <div className="form-row">
               <label>Email</label>
               <div className="field">
