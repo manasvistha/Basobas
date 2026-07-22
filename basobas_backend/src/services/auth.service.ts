@@ -8,12 +8,13 @@ import { HttpError } from "../errors/http-error";
 import { UserRepository } from "../repositories/user.repository";
 import { assertStrongPassword, isPasswordExpired } from "../utils/password-policy";
 import { isPasswordReused, nextPasswordHistory } from "../utils/password-history";
+import { hashUserAgent, SESSION_TTL } from "../config/session";
 const CLIENT_URL = process.env.CLIENT_URL as string;
 
 export class AuthService {
   private userRepository = new UserRepository();
 
-  async login(data: any) {
+  async login(data: any, userAgent?: string) {
     const email = (data?.email || "").trim().toLowerCase();
     const password = data?.password;
 
@@ -42,9 +43,9 @@ export class AuthService {
 
     // 5. Generate JWT Token
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      { id: user._id, role: user.role, ua: hashUserAgent(userAgent) },
       process.env.JWT_SECRET || "fallback_secret",
-      { expiresIn: "30d" }
+      { expiresIn: SESSION_TTL }
     );
 
     // 6. Return keys that match what our Controller and Flutter expect
@@ -57,7 +58,7 @@ export class AuthService {
   }
 
   // Second step of an MFA login: verify the TOTP code, then issue the real JWT.
-  async completeMfaLogin(userId: string, otp: string) {
+  async completeMfaLogin(userId: string, otp: string, userAgent?: string) {
     const user = await UserModel.findById(userId);
     if (!user || !user.mfaEnabled || !user.mfaSecret) {
       throw new Error("MFA is not set up for this account");
@@ -74,16 +75,16 @@ export class AuthService {
     }
 
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      { id: user._id, role: user.role, ua: hashUserAgent(userAgent) },
       process.env.JWT_SECRET || "fallback_secret",
-      { expiresIn: "30d" }
+      { expiresIn: SESSION_TTL }
     );
 
     return { passwordExpired: false as const, user: user.toJSON(), token };
   }
 
   // Set a new password when the current one has expired, then issue the real JWT.
-  async changeExpiredPassword(userId: string, newPassword: string) {
+  async changeExpiredPassword(userId: string, newPassword: string, userAgent?: string) {
     assertStrongPassword(newPassword);
     const user = await UserModel.findById(userId);
     if (!user) throw new Error("User not found");
@@ -98,9 +99,9 @@ export class AuthService {
       passwordChangedAt: new Date(),
     });
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      { id: user._id, role: user.role, ua: hashUserAgent(userAgent) },
       process.env.JWT_SECRET || "fallback_secret",
-      { expiresIn: "30d" }
+      { expiresIn: SESSION_TTL }
     );
     const updated = await UserModel.findById(userId);
     return { user: (updated || user).toJSON(), token };

@@ -12,6 +12,7 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
 import { assertStrongPassword } from "../utils/password-policy";
 import { recordFailedLogin, clearFailedLogins } from "../middlewears/failed-login.middlewears";
+import { AUTH_COOKIE, authCookieOptions, clearCookieOptions } from "../config/session";
 
 const authService = new AuthService();
 const userService = new UserService();
@@ -75,7 +76,7 @@ export class AuthController {
       const validatedData = parseResult.data;
       
       // 2. Perform login via service
-      const result = await authService.login(validatedData);
+      const result = await authService.login(validatedData, req.headers["user-agent"]);
 
       // Credentials are valid at this point — reset the failed-attempt counter.
       clearFailedLogins(req);
@@ -116,6 +117,8 @@ export class AuthController {
       // 3. Return response - Flutter looks for 'token' and 'data'
       // result should be { user: IUser, token: string }
       // Note: authService.login already calls toJSON(), so result.user is already serialized
+      // Set the secure, HttpOnly session cookie (web clients authenticate via this).
+      res.cookie(AUTH_COOKIE, result.token, authCookieOptions());
       return res.status(200).json({
         success: true,
         token: result.token, // Matching: response.data['token'] in Flutter login()
@@ -133,6 +136,12 @@ export class AuthController {
         error: error.message
       });
     }
+  }
+
+  // Clear the session cookie (logout). Works whether or not a valid token is present.
+  async logout(req: Request, res: Response) {
+    res.clearCookie(AUTH_COOKIE, clearCookieOptions());
+    return res.status(200).json({ success: true, message: "Logged out successfully" });
   }
 
   // Second step of MFA login: exchange the short-lived mfaToken + OTP for a real JWT.
@@ -154,7 +163,7 @@ export class AuthController {
         return res.status(401).json({ success: false, message: "Invalid MFA token" });
       }
 
-      const result = await authService.completeMfaLogin(decoded.id, String(otp));
+      const result = await authService.completeMfaLogin(decoded.id, String(otp), req.headers["user-agent"]);
       clearFailedLogins(req);
       if (result.passwordExpired) {
         const changeToken = jwt.sign(
@@ -164,6 +173,7 @@ export class AuthController {
         );
         return res.status(200).json({ success: true, passwordExpired: true, changeToken });
       }
+      res.cookie(AUTH_COOKIE, result.token, authCookieOptions());
       return res.status(200).json({ success: true, token: result.token, data: result.user });
     } catch (error: any) {
       recordFailedLogin(req);
@@ -191,7 +201,8 @@ export class AuthController {
         return res.status(401).json({ success: false, message: "Invalid change token" });
       }
 
-      const result = await authService.changeExpiredPassword(decoded.id, String(newPassword));
+      const result = await authService.changeExpiredPassword(decoded.id, String(newPassword), req.headers["user-agent"]);
+      res.cookie(AUTH_COOKIE, result.token, authCookieOptions());
       return res.status(200).json({ success: true, token: result.token, data: result.user });
     } catch (error: any) {
       return res.status(400).json({ success: false, message: error.message || "Failed to change password" });
