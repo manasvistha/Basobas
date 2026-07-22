@@ -7,6 +7,7 @@ import { JWT_SECRET } from "../config";
 import { HttpError } from "../errors/http-error";
 import { UserRepository } from "../repositories/user.repository";
 import { assertStrongPassword } from "../utils/password-policy";
+import { isPasswordReused, nextPasswordHistory } from "../utils/password-history";
 const CLIENT_URL = process.env.CLIENT_URL as string;
 
 export class AuthService {
@@ -136,13 +137,17 @@ export class AuthService {
             }
             const decoded: any = jwt.verify(token, JWT_SECRET);
             const userId = decoded.id;
-            const user = await this.userRepository.getUserById(userId);
+            const user = await UserModel.findById(userId);
             if (!user) {
                 throw new HttpError(404, "User not found");
             }
+            if (await isPasswordReused(user, newPassword)) {
+                throw new HttpError(400, "You cannot reuse a recent password. Please choose a new one.");
+            }
             const hashedPassword = await bcrypt.hash(newPassword, 10);
-            await UserModel.findByIdAndUpdate(userId, { password: hashedPassword });
-            return user;
+            const passwordHistory = nextPasswordHistory(user.password, user.passwordHistory, hashedPassword);
+            await UserModel.findByIdAndUpdate(userId, { password: hashedPassword, passwordHistory });
+            return user.toJSON();
         } catch (error) {
             // Preserve explicit HttpErrors (e.g. weak password, missing fields);
             // only unexpected failures (bad/expired JWT) become the generic message.
