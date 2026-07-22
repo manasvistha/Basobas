@@ -2,6 +2,7 @@ export const API = {
  AUTH:{
     REGISTER: '/api/auth/register',
     LOGIN: '/api/auth/login',
+    LOGOUT: '/api/auth/logout',
    PROFILE: '/api/auth/profile',
   EXPORT_DATA: '/api/auth/export-data',
   VERIFY_MFA: '/api/auth/login/verify-mfa',

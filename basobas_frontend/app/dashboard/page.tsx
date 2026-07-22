@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getCurrentUser, getImageUrl, getPropertyImageUrl } from "@/lib/utils/auth-utils";
-import { getProfile } from "@/lib/api/auth";
+import { getProfile, logout } from "@/lib/api/auth";
 import { getNotifications, markNotificationRead, markAllNotificationsRead, NotificationItem } from "@/lib/api/notification";
 import { deleteProperty, getMyProperties, getProperties, Property } from "@/lib/api/property";
 import { createBooking } from "@/lib/api/booking";
@@ -249,10 +249,9 @@ export default function DashboardPage() {
     setFilteredProperties(filtered);
   }, [allProperties, searchTerm, priceMin, priceMax]);
 
-  const onLogout = () => {
+  const onLogout = async () => {
     setShowProfileMenu(false);
-    // Clear auth cookies client-side (they were httpOnly:false anyway)
-    document.cookie = "auth_token=; path=/; max-age=0";
+    await logout(); // server clears the HttpOnly session cookie
     document.cookie = "user_data=; path=/; max-age=0";
     router.push("/login");
   };

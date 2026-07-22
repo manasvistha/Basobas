@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { logout } from "@/lib/api/auth";
 import { createUser } from "@/lib/api/admin";
 import { getCurrentUser } from "@/lib/utils/auth-utils";
 import BackPillLink from "@/components/ui/BackPillLink";
@@ -72,10 +73,9 @@ export default function AdminCreateUserPage() {
     }
   };
 
-  const onLogout = () => {
+  const onLogout = async () => {
     setShowProfileMenu(false);
-    // Clear auth cookies client-side (they were httpOnly:false anyway)
-    document.cookie = "auth_token=; path=/; max-age=0";
+    await logout(); // server clears the HttpOnly session cookie
     document.cookie = "user_data=; path=/; max-age=0";
     router.push("/login");
   };
