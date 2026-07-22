@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { getCurrentUser, getImageUrl } from "@/lib/utils/auth-utils";
-import { getProfile } from "@/lib/api/auth";
+import { getProfile, logout } from "@/lib/api/auth";
 import { getUsers, getAllProperties } from "@/lib/api/admin";
 import { getNotifications, markNotificationRead, markAllNotificationsRead, NotificationItem } from "@/lib/api/notification";
 import Link from "next/link";
@@ -87,10 +87,9 @@ export default function AdminDashboardPage() {
     void hydrate();
   }, [router]);
 
-  const onLogout = () => {
+  const onLogout = async () => {
     setShowProfileMenu(false);
-    // Clear auth cookies client-side (they were httpOnly:false anyway)
-    document.cookie = "auth_token=; path=/; max-age=0";
+    await logout(); // server clears the HttpOnly session cookie
     document.cookie = "user_data=; path=/; max-age=0";
     router.push("/login");
   };

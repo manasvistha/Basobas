@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import BackPillLink from "@/components/ui/BackPillLink";
 import { useRouter } from "next/navigation";
+import { logout } from "@/lib/api/auth";
 import { getAllProperties, updatePropertyStatus, deleteProperty, approveProperty, rejectProperty } from "@/lib/api/admin";
 import { getProperty } from "@/lib/api/property";
 import { getCurrentUser, getPropertyImageUrl } from "@/lib/utils/auth-utils";
@@ -122,9 +123,8 @@ export default function AdminPropertiesPage() {
     }
   };
 
-  const handleLogoutClick = () => {
-    // Clear auth cookies client-side (they were httpOnly:false anyway)
-    document.cookie = "auth_token=; path=/; max-age=0";
+  const handleLogoutClick = async () => {
+    await logout(); // server clears the HttpOnly session cookie
     document.cookie = "user_data=; path=/; max-age=0";
     router.push('/login');
   };

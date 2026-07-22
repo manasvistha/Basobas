@@ -47,13 +47,12 @@ export default function LoginForm() {
 
   // Shared success path: store auth cookies and redirect by role.
   const finishLogin = (result: any) => {
-    if (result.token) {
-      document.cookie = `auth_token=${result.token}; path=/; max-age=${60 * 60 * 24 * 30}`;
-    }
+    // The secure, HttpOnly auth cookie is set by the server. Store only
+    // non-sensitive user data client-side (for the UI and route guard).
     if (result.data) {
       document.cookie = `user_data=${encodeURIComponent(
         JSON.stringify(result.data)
-      )}; path=/; max-age=${60 * 60 * 24 * 30}`;
+      )}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
     }
     const role = result?.data?.role;
     if (role === "admin") {

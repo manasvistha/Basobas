@@ -15,16 +15,17 @@ const parseUser = (raw?: string | null) => {
 };
 export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
-    const token = request.cookies.get("auth_token")?.value ?? null;
     const user = parseUser(request.cookies.get("user_data")?.value ?? null);
 
     const isPublic = publicRoutes.some(route => matches(pathname, route));
     const isAdminPath = adminRoutes.some(route => matches(pathname, route));
     const isUserPath = userRoutes.some(route => matches(pathname, route));
 
-    const hasAuthToken = Boolean(token);
+    // The token lives in a server-set HttpOnly cookie that this middleware
+    // cannot read; the real auth check happens server-side on every API call.
+    // This guard only uses the non-sensitive user_data hint for UX redirects.
     const hasUserRole = Boolean(user?.role);
-    const isAuthenticated = hasAuthToken && hasUserRole;
+    const isAuthenticated = hasUserRole;
     if (!isAuthenticated && (isAdminPath || isUserPath)) {
         return NextResponse.redirect(new URL('/login', request.url));
     }

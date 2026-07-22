@@ -63,6 +63,16 @@ export const login = async ( loginData : any ) => {
     }
 }
 
+export const logout = async () => {
+    // Ask the server to clear the HttpOnly session cookie. Ignore network errors
+    // so the client can still clear its own state and redirect.
+    try {
+        await axios.post(API.AUTH.LOGOUT);
+    } catch {
+        // no-op
+    }
+};
+
 export const verifyLoginMfa = async (mfaToken: string, otp: string) => {
     const response = await axios.post(API.AUTH.VERIFY_MFA, { mfaToken, otp });
     return response.data;

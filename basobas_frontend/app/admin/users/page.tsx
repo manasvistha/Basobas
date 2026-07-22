@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { logout } from "@/lib/api/auth";
 import { getUsers, deleteUser, promoteUser } from "@/lib/api/admin";
 import { getCurrentUser } from "@/lib/utils/auth-utils";
 import { API } from "@/lib/api/endpoints";
@@ -69,10 +70,9 @@ export default function AdminUsersPage() {
     void fetchUsers(currentPage);
   }, [currentPage]);
 
-  const onLogout = () => {
+  const onLogout = async () => {
     setShowProfileMenu(false);
-    // Clear auth cookies client-side (they were httpOnly:false anyway)
-    document.cookie = "auth_token=; path=/; max-age=0";
+    await logout(); // server clears the HttpOnly session cookie
     document.cookie = "user_data=; path=/; max-age=0";
     router.push("/login");
   };

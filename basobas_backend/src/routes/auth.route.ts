@@ -14,6 +14,7 @@ const authController = new AuthController();
 router.post("/register", authLimiter, authController.register);
 router.post("/login", authLimiter, authController.login);
 router.post("/login/verify-mfa", authLimiter, authController.verifyMfaLogin);
+router.post("/logout", authController.logout);
 router.post("/password/change-expired", authLimiter, authController.changeExpiredPassword);
 
 // Protected routes (require JWT token)
