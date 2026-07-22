@@ -37,6 +37,7 @@ import bookingRoutes from './routes/booking.route.ts';
 import conversationRoutes from './routes/conversation.route.ts';
 import notificationRoutes from './routes/notification.route.ts';
 import favoriteRoutes from './routes/favorite.route.ts';
+import { ipGuard } from './middlewears/ip-guard.middlewears.ts';
 
 const app: Application = express();
 
@@ -51,7 +52,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
 })); 
-app.use(morgan('dev')); 
+app.use(morgan('dev'));
+
+// IP guard: reject blocked IPs early (allow-listed IPs bypass).
+app.use(ipGuard);
 
 // 4. CORS CONFIGURATION
 app.use(cors({
