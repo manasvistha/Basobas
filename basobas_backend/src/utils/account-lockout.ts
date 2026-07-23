@@ -1,4 +1,5 @@
 import type { IUser } from "../models/user.model";
+import { raiseSecurityAlert } from "./security-alert";
 
 // Per-account lockout — the account-scoped complement to the per-IP failed-login
 // block in failed-login.middlewears.ts. IP blocking stops one machine spraying
@@ -30,6 +31,14 @@ export async function registerFailedAttempt(user: IUser): Promise<void> {
   if (attempts >= MAX_ATTEMPTS) {
     user.failedLoginAttempts = 0; // fresh slate once the lock expires
     user.lockUntil = new Date(Date.now() + LOCK_MS);
+    // Proactive alert: an account just crossed the lockout threshold.
+    raiseSecurityAlert({
+      type: "account_locked",
+      message: `Account locked after ${MAX_ATTEMPTS} failed login attempts.`,
+      actorId: user._id?.toString(),
+      actorEmail: user.email,
+      metadata: { lockMs: LOCK_MS },
+    });
   } else {
     user.failedLoginAttempts = attempts;
     user.lockUntil = undefined;

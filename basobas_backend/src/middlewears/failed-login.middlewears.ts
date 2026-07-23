@@ -1,5 +1,6 @@
 import { Request } from "express";
 import { blockIp, getClientIp, isAllowlisted } from "./ip-guard.middlewears";
+import { raiseSecurityAlert } from "../utils/security-alert";
 
 // Track failed authentication attempts per IP and auto-block after too many
 // within a rolling window — the active side of brute-force defence.
@@ -27,6 +28,13 @@ export function recordFailedLogin(req: Request): void {
   if (entry.count >= MAX_FAILS) {
     blockIp(ip, BLOCK_MS);
     attempts.delete(ip); // the IP is now blocked; reset the counter
+    // Proactive alert: an IP just got auto-blocked for repeated failures.
+    raiseSecurityAlert({
+      type: "ip_blocked",
+      message: `IP auto-blocked after ${MAX_FAILS} failed auth attempts.`,
+      ip,
+      metadata: { blockMs: BLOCK_MS },
+    });
   }
 }
 

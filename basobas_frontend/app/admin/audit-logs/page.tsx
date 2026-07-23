@@ -28,6 +28,7 @@ const ACTION_GROUPS = [
   { label: "User deletions", value: "user.deleted" },
   { label: "Property moderation", value: "property." },
   { label: "Data export/import", value: "data." },
+  { label: "Security alerts", value: "security." },
 ];
 
 export default function AdminAuditLogsPage() {
