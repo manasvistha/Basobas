@@ -16,6 +16,8 @@ export interface IUser extends Document {
   mfaSecret?: string;
   passwordHistory?: string[];
   passwordChangedAt?: Date;
+  failedLoginAttempts?: number;
+  lockUntil?: Date;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(password: string): Promise<boolean>;
@@ -71,6 +73,14 @@ const UserSchema: Schema = new Schema<IUser>(
       type: Date,
       default: Date.now,
     },
+    // Account-lockout state (brute-force defence). Never exposed via toJSON.
+    failedLoginAttempts: {
+      type: Number,
+      default: 0,
+    },
+    lockUntil: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
@@ -85,6 +95,8 @@ const UserSchema: Schema = new Schema<IUser>(
         delete response.password;
         delete response.mfaSecret;
         delete response.passwordHistory;
+        delete response.failedLoginAttempts;
+        delete response.lockUntil;
         return response;
       },
     },

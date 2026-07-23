@@ -39,10 +39,12 @@ export default function LoginForm() {
     formState: { errors },
   } = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
   });
 
   const forgotPasswordForm = useForm<RequestPasswordResetDTO>({
     resolver: zodResolver(RequestPasswordResetSchema),
+    defaultValues: { email: "" },
   });
 
   // Shared success path: store auth cookies and redirect by role.
