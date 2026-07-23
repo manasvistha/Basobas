@@ -35,9 +35,13 @@ export const authorize = async (req: any, res: any, next: any) => {
     // A deleted user, or a user locked out for brute-force, cannot ride an
     // already-issued token. Role/permissions are read fresh from the DB so a
     // demotion takes effect immediately, not at token expiry.
-    const user = await UserModel.findById(decoded.id).select(
-      'role lockUntil passwordChangedAt'
-    );
+    // .lean() returns the RAW stored document. This is deliberate: a non-lean
+    // read would let Mongoose apply the `passwordChangedAt` schema default
+    // (Date.now) to accounts that have no stored value, making every session
+    // look "issued before the last password change" and falsely revoking it.
+    const user = await UserModel.findById(decoded.id)
+      .select('role lockUntil passwordChangedAt')
+      .lean<{ role?: string; lockUntil?: Date; passwordChangedAt?: Date }>();
     if (!user) {
       return res.status(401).json({ message: 'Account no longer exists' });
     }
@@ -46,10 +50,11 @@ export const authorize = async (req: any, res: any, next: any) => {
     }
 
     // Session revocation on credential change: any token issued BEFORE the
-    // password was last changed is dead (covers reset / forced change / logout-
-    // everywhere). iat is in seconds; allow a small clock-skew margin.
+    // password was last changed is dead (covers reset / forced change). Only
+    // enforced when a real timestamp is stored; iat is in seconds, with a small
+    // clock-skew margin.
     if (user.passwordChangedAt && typeof decoded.iat === 'number') {
-      const changedAtSec = Math.floor(user.passwordChangedAt.getTime() / 1000);
+      const changedAtSec = Math.floor(new Date(user.passwordChangedAt).getTime() / 1000);
       if (changedAtSec > decoded.iat + 5) {
         return res.status(401).json({ message: 'Session expired, please log in again' });
       }

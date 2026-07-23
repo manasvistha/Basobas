@@ -8,7 +8,8 @@ import { loginSchema, LoginData } from "../schema";
 import { login as loginUser, requestPasswordReset, verifyLoginMfa, changeExpiredPassword } from "@/lib/api/auth";
 import { isStrongPassword, PASSWORD_MIN_LENGTH } from "@/lib/passwordPolicy";
 import PasswordStrengthMeter from "@/components/ui/PasswordStrengthMeter";
-import { useState } from "react";
+import CaptchaWidget, { isCaptchaEnabled } from "@/components/ui/CaptchaWidget";
+import { useState, useCallback } from "react";
 import styles from "./login_form.module.css";
 import z from "zod";
 import { toast } from "react-toastify";
@@ -32,6 +33,8 @@ export default function LoginForm() {
   const [changeToken, setChangeToken] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
+  const onCaptchaVerify = useCallback((token: string) => setCaptchaToken(token), []);
 
   const {
     register,
@@ -69,8 +72,9 @@ export default function LoginForm() {
     setErrorMessage("");
 
     try {
-      // Call the API directly (no server action)
-      const result = await loginUser(data);
+      // Call the API directly (no server action). Include the CAPTCHA token so
+      // the server can verify a human is behind the request (when enabled).
+      const result = await loginUser({ ...data, captchaToken });
 
       // If the account has MFA enabled, switch to the code-entry step.
       if (result?.mfaRequired && result?.mfaToken) {
@@ -338,9 +342,11 @@ export default function LoginForm() {
               </div>
             </div>
 
+            <CaptchaWidget onVerify={onCaptchaVerify} />
+
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || (isCaptchaEnabled() && !captchaToken)}
               style={{
                 marginTop: "8px",
                 background: "linear-gradient(135deg, #0b5e58 0%, #0f7670 100%)",
@@ -352,7 +358,7 @@ export default function LoginForm() {
                 fontSize: "16px",
                 fontWeight: "500",
                 transition: "all 0.2s",
-                opacity: isLoading ? 0.7 : 1
+                opacity: isLoading || (isCaptchaEnabled() && !captchaToken) ? 0.7 : 1
               }}
               onMouseEnter={e => !isLoading && (e.currentTarget.style.transform = "translateY(-1px)")}
               onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}
