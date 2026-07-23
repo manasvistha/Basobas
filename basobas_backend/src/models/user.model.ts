@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { NextFunction } from "express";
 import bcrypt from "bcryptjs";
+import { hashPassword } from "../utils/crypto";
 
 // 1. Define the interface for the Document
 export interface IUser extends Document {
@@ -15,6 +16,8 @@ export interface IUser extends Document {
   mfaSecret?: string;
   passwordHistory?: string[];
   passwordChangedAt?: Date;
+  failedLoginAttempts?: number;
+  lockUntil?: Date;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(password: string): Promise<boolean>;
@@ -70,6 +73,14 @@ const UserSchema: Schema = new Schema<IUser>(
       type: Date,
       default: Date.now,
     },
+    // Account-lockout state (brute-force defence). Never exposed via toJSON.
+    failedLoginAttempts: {
+      type: Number,
+      default: 0,
+    },
+    lockUntil: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
@@ -84,6 +95,8 @@ const UserSchema: Schema = new Schema<IUser>(
         delete response.password;
         delete response.mfaSecret;
         delete response.passwordHistory;
+        delete response.failedLoginAttempts;
+        delete response.lockUntil;
         return response;
       },
     },
@@ -104,8 +117,7 @@ const UserSchema: Schema = new Schema<IUser>(
 UserSchema.pre<IUser>("save", async function () {
   if (!this.isModified("password")) return;
   try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+    this.password = await hashPassword(this.password);
   } catch (error: any) {
     throw error;
   }

@@ -6,13 +6,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, RegisterData } from "@/lib/authSchema";
 import { register as registerUser } from "@/lib/api/auth";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import PasswordStrengthMeter from "@/components/ui/PasswordStrengthMeter";
+import CaptchaWidget, { isCaptchaEnabled } from "@/components/ui/CaptchaWidget";
 
 export default function RegisterForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
+  const onCaptchaVerify = useCallback((token: string) => setCaptchaToken(token), []);
 
   const {
     register,
@@ -31,8 +34,9 @@ export default function RegisterForm() {
     try {
       console.log("Submitting registration form:", data);
 
-      // Call the API directly (no server action)
-      const result = await registerUser(data);
+      // Call the API directly (no server action). Include the CAPTCHA token so
+      // the server can verify a human is behind the request (when enabled).
+      const result = await registerUser({ ...data, captchaToken });
       console.log("Registration result:", result);
 
       // Consider it a success if the backend returned anything meaningful
@@ -148,9 +152,11 @@ export default function RegisterForm() {
             </div>
           </div>
 
+          <CaptchaWidget onVerify={onCaptchaVerify} />
+
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || (isCaptchaEnabled() && !captchaToken)}
             style={{
               background: "linear-gradient(135deg, #0b5e58 0%, #0f7670 100%)",
               color: "white",
@@ -161,7 +167,7 @@ export default function RegisterForm() {
               cursor: isLoading ? "not-allowed" : "pointer",
               fontSize: "16px",
               transition: "all 0.2s",
-              opacity: isLoading ? 0.7 : 1,
+              opacity: isLoading || (isCaptchaEnabled() && !captchaToken) ? 0.7 : 1,
             }}
           >
             {isLoading ? "Creating Account..." : "Create Account"}

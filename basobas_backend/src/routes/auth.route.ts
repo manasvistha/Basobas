@@ -5,14 +5,17 @@ import { requirePermission } from "../middlewears/rbac.middlewears.ts";
 import { PERMISSIONS } from "../config/rbac.ts";
 import { uploadProfilePicture } from "../middlewears/uploadProfilePicture.middlewears.ts";
 import { authLimiter, sensitiveLimiter } from "../middlewears/rate-limit.middlewears.ts";
+import { requireCaptcha } from "../middlewears/captcha.middlewears.ts";
 
 
 const router = Router();
 const authController = new AuthController();
 
-// Public routes — rate limited to defend against brute-force / credential stuffing.
-router.post("/register", authLimiter, authController.register);
-router.post("/login", authLimiter, authController.login);
+// Public routes — layered brute-force defence: rate limit (per-IP throttle) +
+// CAPTCHA (proves a human) on the credential-accepting endpoints. Account
+// lockout is enforced per-account inside the login service.
+router.post("/register", authLimiter, requireCaptcha, authController.register);
+router.post("/login", authLimiter, requireCaptcha, authController.login);
 router.post("/login/verify-mfa", authLimiter, authController.verifyMfaLogin);
 router.post("/logout", authController.logout);
 router.post("/password/change-expired", authLimiter, authController.changeExpiredPassword);
@@ -27,7 +30,7 @@ router.post("/mfa/disable", authorize, authController.mfaDisable);
 router.post("/upload-photo", authorize, uploadProfilePicture.single('photo'), authController.uploadPhoto);
 router.post("/user", authorize, requirePermission(PERMISSIONS.USER_MANAGE), uploadProfilePicture.single('photo'), authController.createUser);
 router.put("/:id", sensitiveLimiter, authorize, requirePermission(PERMISSIONS.PROFILE_WRITE_OWN), uploadProfilePicture.single('photo'), authController.updateUser);
-router.post("/request-password-reset", authLimiter, authController.sendResetPasswordEmail);
+router.post("/request-password-reset", authLimiter, requireCaptcha, authController.sendResetPasswordEmail);
 router.post("/reset-password/:token", authLimiter, authController.resetPassword);
 
 export default router;

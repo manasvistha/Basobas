@@ -1,6 +1,7 @@
 import { authenticator } from "otplib";
 import QRCode from "qrcode";
 import { UserModel } from "../models/user.model";
+import { encrypt, decrypt } from "../utils/crypto";
 
 const ISSUER = "BasoBas";
 
@@ -15,7 +16,9 @@ export class MfaService {
     if (!user) throw new Error("User not found");
 
     const secret = authenticator.generateSecret();
-    user.mfaSecret = secret;
+    // Store the TOTP secret encrypted at rest (AES-256-GCM). The plaintext
+    // `secret` is only used to build the QR / otpauth URL below.
+    user.mfaSecret = encrypt(secret);
     user.mfaEnabled = false; // not enabled until confirmed
     await user.save();
 
@@ -29,7 +32,7 @@ export class MfaService {
   async enable(userId: string, token: string) {
     const user = await UserModel.findById(userId);
     if (!user || !user.mfaSecret) throw new Error("Start MFA setup first");
-    if (!this.verify(token, user.mfaSecret)) throw new Error("Invalid authentication code");
+    if (!this.verify(token, decrypt(user.mfaSecret))) throw new Error("Invalid authentication code");
 
     user.mfaEnabled = true;
     await user.save();
@@ -41,7 +44,7 @@ export class MfaService {
     const user = await UserModel.findById(userId);
     if (!user) throw new Error("User not found");
     if (!user.mfaEnabled || !user.mfaSecret) throw new Error("MFA is not enabled");
-    if (!this.verify(token, user.mfaSecret)) throw new Error("Invalid authentication code");
+    if (!this.verify(token, decrypt(user.mfaSecret))) throw new Error("Invalid authentication code");
 
     user.mfaEnabled = false;
     user.mfaSecret = undefined;
