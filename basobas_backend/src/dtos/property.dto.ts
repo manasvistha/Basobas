@@ -23,7 +23,7 @@ export const CreatePropertySchema = z.object({
   availability: z.array(z.object({
     startDate: z.string().transform(str => new Date(str)),
     endDate: z.string().transform(str => new Date(str))
-  })).min(1, "At least one availability period is required"),
+  })).optional(),
   images: z.array(z.string()).optional()
 });
 

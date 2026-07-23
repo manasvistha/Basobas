@@ -104,6 +104,15 @@ export const exportMyData = async () => {
     return response.data as Blob;
 };
 
+export const importMyData = async (file: File) => {
+    // Upload a previously-exported JSON file to restore the current user's own
+    // profile and property listings. The server ignores any ids in the file.
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await axios.post(API.AUTH.IMPORT_DATA, formData);
+    return response.data;
+};
+
 export const getProfile = async () => {
     try {
         console.log('Getting user profile');

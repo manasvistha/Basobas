@@ -84,6 +84,7 @@ export default function RegisterForm() {
         <form onSubmit={handleSubmit(onSubmit)} className="login-form">
           {errorMessage && (
             <div
+              role="alert"
               className="error-text"
               style={{ marginBottom: "1rem", color: "#dc2626" }}
             >
@@ -93,45 +94,54 @@ export default function RegisterForm() {
 
           {/* Full Name */}
           <div className="form-row">
-            <label>Full Name</label>
+            <label htmlFor="signup-name">Full Name</label>
             <div className="field">
               <input
+                id="signup-name"
                 type="text"
                 placeholder="Enter your full name"
+                aria-invalid={!!errors.name}
+                aria-describedby={errors.name ? "signup-name-error" : undefined}
                 {...register("name")}
               />
               {errors.name && (
-                <p className="error-text">{errors.name.message}</p>
+                <p id="signup-name-error" className="error-text">{errors.name.message}</p>
               )}
             </div>
           </div>
 
           {/* Email */}
           <div className="form-row">
-            <label>Email</label>
+            <label htmlFor="signup-email">Email</label>
             <div className="field">
               <input
+                id="signup-email"
                 type="email"
                 placeholder="Enter your email"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? "signup-email-error" : undefined}
                 {...register("email")}
               />
               {errors.email && (
-                <p className="error-text">{errors.email.message}</p>
+                <p id="signup-email-error" className="error-text">{errors.email.message}</p>
               )}
             </div>
           </div>
 
           {/* Password */}
           <div className="form-row">
-            <label>Password</label>
+            <label htmlFor="signup-password">Password</label>
             <div className="field">
               <input
+                id="signup-password"
                 type="password"
                 placeholder="Enter your password"
+                aria-invalid={!!errors.password}
+                aria-describedby={errors.password ? "signup-password-error" : undefined}
                 {...register("password")}
               />
               {errors.password && (
-                <p className="error-text">{errors.password.message}</p>
+                <p id="signup-password-error" className="error-text">{errors.password.message}</p>
               )}
               <PasswordStrengthMeter password={passwordValue} />
             </div>
@@ -139,15 +149,18 @@ export default function RegisterForm() {
 
           {/* Confirm Password */}
           <div className="form-row">
-            <label>Confirm Password</label>
+            <label htmlFor="signup-confirm">Confirm Password</label>
             <div className="field">
               <input
+                id="signup-confirm"
                 type="password"
                 placeholder="Confirm your password"
+                aria-invalid={!!errors.confirmPass}
+                aria-describedby={errors.confirmPass ? "signup-confirm-error" : undefined}
                 {...register("confirmPass")}
               />
               {errors.confirmPass && (
-                <p className="error-text">{errors.confirmPass.message}</p>
+                <p id="signup-confirm-error" className="error-text">{errors.confirmPass.message}</p>
               )}
             </div>
           </div>

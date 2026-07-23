@@ -20,6 +20,7 @@ export const PERMISSIONS = {
   USER_MANAGE: "user:manage",               // admin CRUD on users
   USER_PROMOTE: "user:promote",             // grant admin
   ADMIN_ACCESS: "admin:access",             // read admin dashboards/data
+  AUDIT_READ: "audit:read",                 // read the security audit log (admin)
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -41,6 +42,7 @@ const adminPermissions: Permission[] = [
   PERMISSIONS.USER_MANAGE,
   PERMISSIONS.USER_PROMOTE,
   PERMISSIONS.ADMIN_ACCESS,
+  PERMISSIONS.AUDIT_READ,
 ];
 
 export const ROLE_PERMISSIONS: Record<Role, Set<Permission>> = {

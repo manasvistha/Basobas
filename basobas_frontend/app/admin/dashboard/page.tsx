@@ -778,6 +778,58 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
             </Link>
+
+            <Link
+              href="/admin/audit-logs"
+              style={{
+                backgroundColor: "#fff",
+                borderRadius: "1rem",
+                padding: "2rem",
+                border: "1px solid #e2e8f0",
+                textDecoration: "none",
+                transition: "all 0.2s ease",
+                display: "block",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 12px 24px -4px rgba(0,0,0,0.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                <div
+                  style={{
+                    width: "3rem",
+                    height: "3rem",
+                    borderRadius: "0.75rem",
+                    backgroundColor: "#0b5e58",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 12l2 2 4-4M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </div>
+                <div>
+                  <h3
+                    style={{
+                      fontSize: "1.125rem",
+                      fontWeight: "600",
+                      color: "#1e293b",
+                      marginBottom: "0.25rem",
+                    }}
+                  >
+                    Audit Log
+                  </h3>
+                  <p style={{ color: "#64748b", fontSize: "0.875rem" }}>
+                    Review security-relevant activity
+                  </p>
+                </div>
+              </div>
+            </Link>
           </div>
         </section>
       </main>

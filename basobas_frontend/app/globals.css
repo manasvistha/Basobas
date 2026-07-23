@@ -5,6 +5,14 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Accessibility: a consistent, visible keyboard-focus indicator on every
+   interactive element (buttons, links, inputs) for keyboard-only users. */
+:focus-visible {
+  outline: 2px solid #0f7670;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 :root {
   --surface-0: #f4fbf9;
   --surface-1: #ffffff;

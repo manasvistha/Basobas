@@ -48,8 +48,6 @@ export default function EditPropertyPage() {
     parking: "",
     petPolicy: "",
     amenities: "",
-    availabilityStart: "",
-    availabilityEnd: "",
   });
   const [images, setImages] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
@@ -95,8 +93,6 @@ export default function EditPropertyPage() {
           parking: (property as any).parking ? "true" : "",
           petPolicy: (property as any).petPolicy || "",
           amenities: Array.isArray((property as any).amenities) ? (property as any).amenities.join(", ") : ((property as any).amenities || ""),
-          availabilityStart: property.availability[0]?.startDate?.split("T")[0] || "",
-          availabilityEnd: property.availability[0]?.endDate?.split("T")[0] || "",
         });
         setExistingImages(property.images);
         if (isValidCoordinates(property.coordinates)) {
@@ -163,7 +159,6 @@ export default function EditPropertyPage() {
       formDataToSend.append("parking", formData.parking === "true" ? "true" : "false");
       formDataToSend.append("petPolicy", formData.petPolicy);
       formDataToSend.append("amenities", formData.amenities ? formData.amenities.split(",").map((a: string) => a.trim()).filter((a: string) => a.length > 0).join(",") : "");
-      formDataToSend.append("availability", JSON.stringify([{ startDate: formData.availabilityStart, endDate: formData.availabilityEnd }]));
       if (isValidCoordinates(coordinates)) {
         formDataToSend.append("coordinates", JSON.stringify(coordinates));
       }
@@ -521,49 +516,6 @@ export default function EditPropertyPage() {
                   outline: "none",
                 }}
               />
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem" }}>
-              <div>
-                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "500", color: "#374151", marginBottom: "0.5rem" }}>
-                  Available From
-                </label>
-                <input
-                  type="date"
-                  name="availabilityStart"
-                  value={formData.availabilityStart}
-                  onChange={handleInputChange}
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "0.25rem",
-                    fontSize: "0.875rem",
-                    outline: "none",
-                  }}
-                />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "500", color: "#374151", marginBottom: "0.5rem" }}>
-                  Available Until
-                </label>
-                <input
-                  type="date"
-                  name="availabilityEnd"
-                  value={formData.availabilityEnd}
-                  onChange={handleInputChange}
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "0.25rem",
-                    fontSize: "0.875rem",
-                    outline: "none",
-                  }}
-                />
-              </div>
             </div>
 
             {/* Existing Images */}

@@ -39,4 +39,7 @@ router.put("/properties/:id/status", authorize, requirePermission(PERMISSIONS.PR
 router.delete("/properties/:id", authorize, requirePermission(PERMISSIONS.PROPERTY_MODERATE), adminController.deleteProperty);
 router.get("/bookings", authorize, requirePermission(PERMISSIONS.ADMIN_ACCESS), adminController.getAllBookings);
 
+// Security audit log (admin only)
+router.get("/audit-logs", authorize, requirePermission(PERMISSIONS.AUDIT_READ), adminController.getAuditLogs);
+
 export default router;

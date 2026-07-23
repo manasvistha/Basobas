@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import BackPillLink from "@/components/ui/BackPillLink";
 import axios from "@/lib/api/axios";
 import { API } from "@/lib/api/endpoints";
-import { getProfile, updateProfile, exportMyData, mfaSetup, mfaEnable, mfaDisable } from "@/lib/api/auth";
+import { getProfile, updateProfile, exportMyData, importMyData, mfaSetup, mfaEnable, mfaDisable } from "@/lib/api/auth";
 import { getCurrentUser, getImageUrl } from "@/lib/utils/auth-utils";
 import { Button } from "@/components/ui";
 import PasswordStrengthMeter from "@/components/ui/PasswordStrengthMeter";
@@ -34,6 +34,8 @@ export default function UserProfilePage() {
   const [error, setError] = useState("");
   const [user, setUser] = useState<ProfileUser | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const importInputRef = useRef<HTMLInputElement>(null);
   const [mfaEnabled, setMfaEnabled] = useState(false);
   const [mfaSetupData, setMfaSetupData] = useState<{ qrDataUrl: string; secret: string } | null>(null);
   const [mfaOtp, setMfaOtp] = useState("");
@@ -152,6 +154,41 @@ export default function UserProfilePage() {
       setError(err?.message || "Failed to export your data");
     } finally {
       setExporting(false);
+    }
+  };
+
+  const handleImportData = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file later
+    if (!file) return;
+    setImporting(true);
+    setError("");
+    setMessage("");
+    try {
+      const result = await importMyData(file);
+      const s = result?.imported;
+      setMessage(
+        s
+          ? `Import complete — profile ${s.profileUpdated ? "updated" : "unchanged"}, ${s.propertiesCreated} listing(s) added${s.propertiesSkipped ? `, ${s.propertiesSkipped} skipped` : ""}.`
+          : "Import complete."
+      );
+      // Refresh the profile view with any imported changes.
+      try {
+        const profile = await getProfile();
+        const u = profile?.data || profile?.user || profile;
+        if (u) {
+          setUser(u);
+          setName(u.name || "");
+          setUsername(u.username || "");
+          setCurrentPhoto(u.profilePicture || null);
+        }
+      } catch {
+        /* non-fatal: the import already succeeded */
+      }
+    } catch (err: any) {
+      setError(err?.response?.data?.message || err?.message || "Failed to import your data");
+    } finally {
+      setImporting(false);
     }
   };
 
@@ -552,11 +589,28 @@ export default function UserProfilePage() {
           </h3>
           <p style={{ color: "#64748b", marginBottom: "1rem" }}>
             Download a copy of your BasoBas data &mdash; your profile, properties, bookings,
-            favorites, notifications, and conversations &mdash; as a JSON file.
+            favorites, notifications, and conversations &mdash; as a JSON file. You can also
+            re-import a previously downloaded file to restore your profile and listings.
           </p>
-          <Button variant="secondary" onClick={handleExportData} disabled={exporting}>
-            {exporting ? "Preparing…" : "Download my data"}
-          </Button>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <Button variant="secondary" onClick={handleExportData} disabled={exporting}>
+              {exporting ? "Preparing…" : "Download my data"}
+            </Button>
+            <input
+              ref={importInputRef}
+              type="file"
+              accept="application/json,.json"
+              onChange={handleImportData}
+              style={{ display: "none" }}
+            />
+            <Button
+              variant="secondary"
+              onClick={() => importInputRef.current?.click()}
+              disabled={importing}
+            >
+              {importing ? "Importing…" : "Import my data"}
+            </Button>
+          </div>
         </div>
 
         {/* Two-factor authentication */}

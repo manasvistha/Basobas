@@ -195,6 +195,7 @@ export default function LoginForm() {
             type="checkbox"
             checked={isAdmin}
             onChange={(e) => setIsAdmin(e.target.checked)}
+            aria-label="Log in as admin"
           />
           <span className={styles.slider}></span>
         </label>
@@ -225,7 +226,7 @@ export default function LoginForm() {
         {showPasswordExpired ? (
           <form key="expired" onSubmit={(e) => { e.preventDefault(); void onChangeExpiredPassword(); }} className="login-form">
             {errorMessage && (
-              <div className="error-text" style={{ marginBottom: "1rem" }}>
+              <div role="alert" className="error-text" style={{ marginBottom: "1rem" }}>
                 {errorMessage}
               </div>
             )}
@@ -267,7 +268,7 @@ export default function LoginForm() {
         ) : showMfa ? (
           <form key="mfa" onSubmit={(e) => { e.preventDefault(); void onVerifyMfa(); }} className="login-form">
             {errorMessage && (
-              <div className="error-text" style={{ marginBottom: "1rem" }}>
+              <div role="alert" className="error-text" style={{ marginBottom: "1rem" }}>
                 {errorMessage}
               </div>
             )}
@@ -307,37 +308,43 @@ export default function LoginForm() {
         ) : !showForgotPassword ? (
           <form key="login" onSubmit={handleSubmit(onSubmit)} className="login-form">
             {errorMessage && (
-              <div className="error-text" style={{ marginBottom: "1rem" }}>
+              <div role="alert" className="error-text" style={{ marginBottom: "1rem" }}>
                 {errorMessage}
               </div>
             )}
 
             {/* Email */}
             <div className="form-row">
-              <label>Email</label>
+              <label htmlFor="login-email">Email</label>
               <div className="field">
                 <input
+                  id="login-email"
                   type="email"
                   placeholder="Enter your email"
+                  aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? "login-email-error" : undefined}
                   {...register("email")}
                 />
                 {errors.email && (
-                  <p className="error-text">{errors.email.message}</p>
+                  <p id="login-email-error" className="error-text">{errors.email.message}</p>
                 )}
               </div>
             </div>
 
             {/* Password */}
             <div className="form-row">
-              <label>Password</label>
+              <label htmlFor="login-password">Password</label>
               <div className="field">
                 <input
+                  id="login-password"
                   type="password"
                   placeholder="Enter your password"
+                  aria-invalid={!!errors.password}
+                  aria-describedby={errors.password ? "login-password-error" : undefined}
                   {...register("password")}
                 />
                 {errors.password && (
-                  <p className="error-text">{errors.password.message}</p>
+                  <p id="login-password-error" className="error-text">{errors.password.message}</p>
                 )}
               </div>
             </div>
