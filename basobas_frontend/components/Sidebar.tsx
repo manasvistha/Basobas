@@ -54,14 +54,14 @@ const Sidebar = () => {
                 fontSize: "0.875rem",
                 fontWeight: isActive ? "600" : "500",
                 color: isActive ? "#ffffff" : "#475569",
-                backgroundColor: isActive ? "#4f46e5" : "transparent",
+                backgroundColor: isActive ? "#1e3a8a" : "transparent",
                 transition: "all 0.15s ease",
                 whiteSpace: "nowrap",
               }}
               onMouseEnter={(e) => {
                 if (!isActive) {
                   e.currentTarget.style.backgroundColor = "#f1f5f9";
-                  e.currentTarget.style.color = "#4f46e5";
+                  e.currentTarget.style.color = "#1e3a8a";
                 }
               }}
               onMouseLeave={(e) => {
@@ -100,14 +100,14 @@ const Sidebar = () => {
                 fontSize: "0.875rem",
                 fontWeight: isActive ? "600" : "500",
                 color: isActive ? "#ffffff" : "#475569",
-                backgroundColor: isActive ? "#4f46e5" : "transparent",
+                backgroundColor: isActive ? "#1e3a8a" : "transparent",
                 transition: "all 0.15s ease",
                 whiteSpace: "nowrap",
               }}
               onMouseEnter={(e) => {
                 if (!isActive) {
                   e.currentTarget.style.backgroundColor = "#f1f5f9";
-                  e.currentTarget.style.color = "#4f46e5";
+                  e.currentTarget.style.color = "#1e3a8a";
                 }
               }}
               onMouseLeave={(e) => {

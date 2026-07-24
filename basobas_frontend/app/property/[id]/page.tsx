@@ -54,7 +54,7 @@ const IconShare = ({ size = 14 }: { size?: number }) => (
 
 const sectionCard: React.CSSProperties = {
   background: "#fff",
-  border: "1px solid #eef2ff",
+  border: "1px solid #eff6ff",
   borderRadius: 10,
   padding: "12px 14px",
   boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
@@ -292,7 +292,7 @@ export default function PropertyDetailsPage() {
   if (loading) return (
     <div style={{ minHeight: "100vh", backgroundColor: "#f8f9fc", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ textAlign: "center" }}>
-        <div style={{ width: 32, height: 32, border: "3px solid #e2e8f0", borderTopColor: "#4f46e5", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 12px" }} />
+        <div style={{ width: 32, height: 32, border: "3px solid #e2e8f0", borderTopColor: "#1e3a8a", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 12px" }} />
         <p style={{ color: "#64748b", fontSize: "0.8rem" }}>Loading property...</p>
       </div>
     </div>
@@ -310,7 +310,7 @@ export default function PropertyDetailsPage() {
   const images = property.images || [];
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#f8f9fc", fontFamily: "'DM Sans', sans-serif" }}>
+    <div style={{ minHeight: "100vh", backgroundColor: "#f8f9fc", fontFamily: "var(--font-inter), sans-serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:wght@400;500&display=swap');
         * { box-sizing: border-box; }
@@ -355,7 +355,7 @@ export default function PropertyDetailsPage() {
           border: 1px solid rgba(0,0,0,0.08); transition: all 0.2s;
         }
         .dot:hover { background: rgba(255,255,255,0.9); }
-        .dot.active { background: #4f46e5; width: 18px; border-radius: 3px; }
+        .dot.active { background: #1e3a8a; width: 18px; border-radius: 3px; }
 
         .details-grid {
           display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
@@ -364,8 +364,8 @@ export default function PropertyDetailsPage() {
           .details-grid { grid-template-columns: repeat(2, 1fr); }
         }
         .detail-card {
-          padding: 8px 10px; background: #f8faff; border-radius: 8px;
-          border: 1px solid #eef2ff; text-align: center;
+          padding: 8px 10px; background: #f8fafc; border-radius: 8px;
+          border: 1px solid #eff6ff; text-align: center;
         }
         .detail-label {
           font-size: 0.6rem; color: #64748b; text-transform: uppercase;
@@ -424,7 +424,7 @@ export default function PropertyDetailsPage() {
                       />
                       {!loadedImages[index] && (
                         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <div style={{ width: 28, height: 28, border: '2px solid #e8eaf0', borderTopColor: '#4f46e5', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                          <div style={{ width: 28, height: 28, border: '2px solid #e8eaf0', borderTopColor: '#1e3a8a', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
                         </div>
                       )}
                     </>
@@ -473,12 +473,12 @@ export default function PropertyDetailsPage() {
                     style={{
                       fontSize: "0.74rem",
                       fontWeight: 600,
-                      color: "#4f46e5",
+                      color: "#1e3a8a",
                       textDecoration: "none",
-                      border: "1px solid #c7d2fe",
+                      border: "1px solid #bfdbfe",
                       borderRadius: 8,
                       padding: "5px 10px",
-                      background: "#eef2ff",
+                      background: "#eff6ff",
                     }}
                   >
                     Open in OSM
@@ -504,7 +504,7 @@ export default function PropertyDetailsPage() {
               )}
             </div>
             <div style={{ textAlign: "right" }}>
-              <p style={{ fontSize: "1.3rem", fontWeight: 700, color: "#4f46e5", margin: "0 0 2px", fontFamily: "'DM Mono', monospace" }}>Rs {Number(property.price || 0).toLocaleString()}</p>
+              <p style={{ fontSize: "1.3rem", fontWeight: 700, color: "#1e3a8a", margin: "0 0 2px", fontFamily: "var(--font-poppins), sans-serif" }}>Rs {Number(property.price || 0).toLocaleString()}</p>
               <p style={{ color: "#64748b", fontSize: "0.75rem", margin: 0 }}>/month</p>
             </div>
           </div>
@@ -589,7 +589,7 @@ export default function PropertyDetailsPage() {
               <h2 style={sectionTitle}>Availability</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {property.availability.map((av: any, idx: number) => (
-                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', background: '#f8faff', borderRadius: 7, border: '1px solid #eef2ff' }}>
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', background: '#f8fafc', borderRadius: 7, border: '1px solid #eff6ff' }}>
                     <span style={{ fontSize: 13 }}>📅</span>
                     <span style={{ color: '#475569', fontWeight: 500, fontSize: 12 }}>
                       {new Date(av.startDate).toLocaleDateString()} — {new Date(av.endDate).toLocaleDateString()}
@@ -605,7 +605,7 @@ export default function PropertyDetailsPage() {
             <div style={sectionCard}>
               <h2 style={sectionTitle}>Listed by</h2>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 36, height: 36, borderRadius: 9, background: "#eef2ff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "#4f46e5", fontSize: "0.95rem", flexShrink: 0 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 9, background: "#eff6ff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "#1e3a8a", fontSize: "0.95rem", flexShrink: 0 }}>
                   {property.owner.name?.charAt(0).toUpperCase() || "O"}
                 </div>
                 <div>
@@ -623,7 +623,7 @@ export default function PropertyDetailsPage() {
                       border: "none",
                       borderRadius: 8,
                       padding: "8px 12px",
-                      background: "#4f46e5",
+                      background: "#1e3a8a",
                       color: "#fff",
                       fontWeight: 700,
                       fontSize: "0.82rem",
@@ -648,9 +648,9 @@ export default function PropertyDetailsPage() {
                   justifyContent: "center",
                   padding: "8px 14px",
                   borderRadius: 8,
-                  border: "1px solid #c7d2fe",
-                  background: "#eef2ff",
-                  color: "#4f46e5",
+                  border: "1px solid #bfdbfe",
+                  background: "#eff6ff",
+                  color: "#1e3a8a",
                   textDecoration: "none",
                   fontWeight: 700,
                   fontSize: "0.82rem",
@@ -678,7 +678,7 @@ export default function PropertyDetailsPage() {
                   <button
                     onClick={handleBookProperty}
                     disabled={isBooking || userBookedThis}
-                    style={{ width: "100%", padding: "11px 24px", borderRadius: 10, border: "none", background: userBookedThis ? "#a5b4fc" : isBooking ? "linear-gradient(135deg, #818cf8, #a5b4fc)" : "linear-gradient(135deg, #4f46e5, #6366f1)", color: "#fff", fontSize: "0.95rem", fontWeight: 700, cursor: userBookedThis || isBooking ? "not-allowed" : "pointer", boxShadow: userBookedThis ? "none" : "0 6px 20px rgba(79,70,229,0.4)", transition: "all 0.3s ease", textTransform: "uppercase" }}
+                    style={{ width: "100%", padding: "11px 24px", borderRadius: 10, border: "none", background: userBookedThis ? "#93c5fd" : isBooking ? "linear-gradient(135deg, #60a5fa, #93c5fd)" : "linear-gradient(135deg, #1e3a8a, #2563eb)", color: "#fff", fontSize: "0.95rem", fontWeight: 700, cursor: userBookedThis || isBooking ? "not-allowed" : "pointer", boxShadow: userBookedThis ? "none" : "0 6px 20px rgba(30, 58, 138,0.4)", transition: "all 0.3s ease", textTransform: "uppercase" }}
                   >
                     {userBookedThis ? "Request Sent" : isBooking ? "Sending..." : "Book Property"}
                   </button>
@@ -690,9 +690,9 @@ export default function PropertyDetailsPage() {
                       width: "100%",
                       padding: "9px",
                       borderRadius: 8,
-                      border: "1px solid rgba(79,70,229,0.3)",
-                      background: currentUserBookingId ? "rgba(79,70,229,0.05)" : "rgba(148,163,184,0.2)",
-                      color: currentUserBookingId ? "#4f46e5" : "#64748b",
+                      border: "1px solid rgba(30, 58, 138,0.3)",
+                      background: currentUserBookingId ? "rgba(30, 58, 138,0.05)" : "rgba(148,163,184,0.2)",
+                      color: currentUserBookingId ? "#1e3a8a" : "#64748b",
                       fontWeight: 700,
                       fontSize: "0.9rem",
                       cursor: currentUserBookingId ? "pointer" : "not-allowed"

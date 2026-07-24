@@ -10,6 +10,9 @@ import { createBooking } from "@/lib/api/booking";
 import { getUserFavorites, removeFavorite } from "@/lib/api/favorite";
 
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { Stagger, StaggerItem } from "@/components/motion/Reveal";
+import { Skeleton, SkeletonCard, SkeletonStyles } from "@/components/ui/Skeleton";
 import { getOpenStreetMapUrl, isValidCoordinates } from "@/lib/utils/location";
 
 type DashboardUser = {
@@ -106,7 +109,7 @@ const IconX = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 const IconDot = ({ read }: { read: boolean }) => (
-  <div style={{ width: 7, height: 7, borderRadius: "50%", background: read ? "#e2e8f0" : "#1f2937", flexShrink: 0, marginTop: 2 }} />
+  <div style={{ width: 7, height: 7, borderRadius: "50%", background: read ? "#e2e8f0" : "#1e3a8a", flexShrink: 0, marginTop: 2 }} />
 );
 const IconHeart = ({ size = 16, filled = false }: { size?: number; filled?: boolean }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -325,12 +328,32 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#fafafa" }}>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ width: "36px", height: "36px", border: "2px solid #e2e8f0", borderTopColor: "#1f2937", borderRadius: "50%", animation: "spin 0.7s linear infinite", margin: "0 auto 16px" }} />
-          <p style={{ color: "#94a3b8", fontSize: "0.8125rem", fontFamily: "'DM Sans', sans-serif" }}>Loading workspace…</p>
-          <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      <div style={{ minHeight: "100vh", backgroundColor: "#f8f9fc", fontFamily: "var(--font-inter), sans-serif" }}>
+        <SkeletonStyles />
+        {/* Header placeholder */}
+        <div style={{ background: "#fff", borderBottom: "1px solid #e2e8f0", height: 62 }}>
+          <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 28px", height: 62, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <Skeleton width={120} height={26} />
+            <div style={{ display: "flex", gap: 10 }}><Skeleton width={40} height={40} radius={20} /><Skeleton width={110} height={38} radius={10} /></div>
+          </div>
         </div>
+        {/* Tab bar placeholder */}
+        <div style={{ background: "#fff", borderBottom: "1px solid #f0f0f0" }}>
+          <div style={{ maxWidth: 1240, margin: "0 auto", padding: "10px 28px", display: "flex", gap: 10 }}>
+            {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} width={96} height={34} radius={10} />)}
+          </div>
+        </div>
+        <main style={{ maxWidth: 1240, margin: "0 auto", padding: "32px 28px 80px" }}>
+          <Skeleton width={220} height={30} style={{ marginBottom: 10 }} />
+          <Skeleton width={320} height={16} style={{ marginBottom: 32 }} />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14, marginBottom: 40 }}>
+            {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} height={86} radius={14} />)}
+          </div>
+          <Skeleton width={180} height={22} style={{ marginBottom: 20 }} />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(285px, 1fr))", gap: 16 }}>
+            {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+          </div>
+        </main>
       </div>
     );
   }
@@ -424,7 +447,7 @@ export default function DashboardPage() {
                 gap: 4,
                 fontSize: "0.74rem",
                 fontWeight: 600,
-                color: "#1f2937",
+                color: "#1e3a8a",
                 textDecoration: "none",
                 border: "1px solid #e2e8f0",
                 borderRadius: 999,
@@ -433,14 +456,14 @@ export default function DashboardPage() {
                 marginBottom: 10,
               }}
             >
-              <IconMapPin color="#1f2937" size={12} />
+              <IconMapPin color="#1e3a8a" size={12} />
               Open Map
             </a>
           ) : null}
           {onClick && (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 10, borderTop: "1px solid #f4f4f5" }}>
               <span style={{ fontSize: "0.8rem", color: "#94a3b8", textDecoration: "underline" }}>View details</span>
-              <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: "0.8rem", fontWeight: 600, color: "#1f2937", textDecoration: "underline" }}>
+              <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: "0.8rem", fontWeight: 600, color: "#1e3a8a", textDecoration: "underline" }}>
                 Open <IconArrow size={13} />
               </span>
             </div>
@@ -448,7 +471,7 @@ export default function DashboardPage() {
           {showManagementActions && canEdit && (
             <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
               <button type="button" onClick={e => { e.stopPropagation(); window.location.href = `/property/edit/${property._id}`; }}
-                style={{ padding: "6px 14px", background: "#f3f4f6", color: "#1f2937", border: "1px solid #e2e8f0", borderRadius: 7, fontWeight: 600, cursor: "pointer" }}>Edit</button>
+                style={{ padding: "6px 14px", background: "#f3f4f6", color: "#1e3a8a", border: "1px solid #e2e8f0", borderRadius: 7, fontWeight: 600, cursor: "pointer" }}>Edit</button>
               <button type="button" onClick={e => { e.stopPropagation(); if (window.confirm('Delete this property?')) handleDeleteProperty(property._id); }}
                 style={{ padding: "6px 14px", background: "#fef2f2", color: "#ef4444", border: "1px solid #fecaca", borderRadius: 7, fontWeight: 600, cursor: "pointer" }}>Delete</button>
             </div>
@@ -460,18 +483,18 @@ export default function DashboardPage() {
 
   const StatCard = ({ label, value, icon, accent, onClick }: { label: string; value: number; icon: React.ReactNode; accent?: string; onClick?: () => void }) => (
     <div onClick={onClick} style={{ background: "#fff", border: "1px solid #f0f0f0", borderRadius: "14px", padding: "20px 22px", display: "flex", alignItems: "center", gap: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.04)", cursor: onClick ? 'pointer' : 'default' }}>
-      <div style={{ width: 44, height: 44, borderRadius: "12px", background: accent || "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center", color: "#1f2937", flexShrink: 0 }}>
+      <div style={{ width: 44, height: 44, borderRadius: "12px", background: accent || "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center", color: "#1e3a8a", flexShrink: 0 }}>
         {icon}
       </div>
       <div>
-        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "1.5rem", fontWeight: 500, color: "#0f172a", lineHeight: 1.1 }}>{value}</div>
+        <div style={{ fontFamily: "var(--font-poppins), sans-serif", fontSize: "1.5rem", fontWeight: 500, color: "#0f172a", lineHeight: 1.1 }}>{value}</div>
         <div style={{ fontSize: "0.75rem", color: "#94a3b8", marginTop: 3, letterSpacing: "0.03em", textTransform: "uppercase" }}>{label}</div>
       </div>
     </div>
   );
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#f8f9fc", fontFamily: "'DM Sans', sans-serif" }}>
+    <div style={{ minHeight: "100vh", backgroundColor: "#f8f9fc", fontFamily: "var(--font-inter), sans-serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:wght@400;500&display=swap');
         * { box-sizing: border-box; }
@@ -482,7 +505,7 @@ export default function DashboardPage() {
         .notif-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
       `}</style>
 
-      <header style={{ background: "#ffffff", borderBottom: "1px solid #e2e8f0", position: "sticky", top: 0, zIndex: 50 }}>
+      <header style={{ background: "rgba(255,255,255,0.82)", backdropFilter: "blur(16px) saturate(160%)", WebkitBackdropFilter: "blur(16px) saturate(160%)", borderBottom: "1px solid #e2e8f0", position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 28px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 62 }}>
           <Link href="/dashboard" style={{ display: "flex", alignItems: "center", gap: 9, textDecoration: "none" }}>
             <img src="/basobas.png" alt="BasoBas" style={{ height: 32, width: "auto" }} />
@@ -529,7 +552,7 @@ export default function DashboardPage() {
                       <span style={{ fontWeight: 600, fontSize: 14, color: '#111827' }}>Notifications</span>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         {notifications.filter(n => !n.isRead).length > 0 && (
-                          <button onClick={handleMarkAllRead} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1f2937', fontSize: 12, fontWeight: 600, padding: '4px 8px', borderRadius: 6 }} onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = '#f1f5f9'} onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = 'transparent'}>
+                          <button onClick={handleMarkAllRead} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1e3a8a', fontSize: 12, fontWeight: 600, padding: '4px 8px', borderRadius: 6 }} onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = '#f1f5f9'} onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = 'transparent'}>
                             Mark all read
                           </button>
                         )}
@@ -551,7 +574,7 @@ export default function DashboardPage() {
                       {notifications.map(n => (
                         <div key={n._id} style={{ padding: '12px 16px', borderBottom: '1px solid #f8fafc', background: n.isRead ? '#fff' : '#fafbff', cursor: 'pointer', transition: 'background 0.15s' }} onClick={async () => { try { await handleMarkRead(n._id); } catch (err) {} }} onMouseEnter={(e) => (e.currentTarget as HTMLDivElement).style.background = '#f8fafc'} onMouseLeave={(e) => (e.currentTarget as HTMLDivElement).style.background = n.isRead ? '#fff' : '#fafbff'}>
                           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                            <div style={{ width: 8, height: 8, borderRadius: '50%', background: n.isRead ? 'transparent' : '#1f2937', marginTop: 6, flexShrink: 0 }} />
+                            <div style={{ width: 8, height: 8, borderRadius: '50%', background: n.isRead ? 'transparent' : '#1e3a8a', marginTop: 6, flexShrink: 0 }} />
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ fontSize: 13, color: '#111827', fontWeight: n.isRead ? 400 : 600, marginBottom: 4 }}>{n.message}</div>
                               <div style={{ fontSize: 12, color: '#9ca3af' }}>{new Date(n.createdAt).toLocaleString()}</div>
@@ -589,7 +612,7 @@ export default function DashboardPage() {
                         <IconUser size={14} /> My Profile
                       </Link>
                       <button onClick={onLogout}
-                        style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "9px 12px", fontSize: "0.8125rem", color: "#ef4444", background: "transparent", border: "none", cursor: "pointer", borderRadius: 8, textAlign: "left", fontFamily: "'DM Sans', sans-serif" }}>
+                        style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "9px 12px", fontSize: "0.8125rem", color: "#ef4444", background: "transparent", border: "none", cursor: "pointer", borderRadius: 8, textAlign: "left", fontFamily: "var(--font-inter), sans-serif" }}>
                         <IconLogout size={14} /> Sign out
                       </button>
                     </div>
@@ -602,7 +625,7 @@ export default function DashboardPage() {
       </header>
 
 
-      <div style={{ background: "#fff", borderBottom: "1px solid #f0f0f0" }}>
+      <div style={{ position: "sticky", top: 61, zIndex: 40, background: "rgba(255,255,255,0.72)", backdropFilter: "blur(14px) saturate(160%)", WebkitBackdropFilter: "blur(14px) saturate(160%)", borderBottom: "1px solid #e2e8f0" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 28px" }}>
           <nav style={{ display: "flex", alignItems: "center", gap: 4, padding: "8px 0", flexWrap: "wrap" }}>
             {([
@@ -615,14 +638,25 @@ export default function DashboardPage() {
               { key: 'account', label: 'My Account', icon: <IconUser size={15} /> },
             ] as const).map(tab => {
               const isActive = activeTab === tab.key;
+              const isFav = tab.key === 'favorites';
               return (
-                <button key={tab.key} onClick={() => tab.key === 'messages' ? router.push('/conversations') : setActiveTab(tab.key)}
-                  style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", borderRadius: 10, border: "none", background: isActive ? (tab.key === 'favorites' ? "#fff0f3" : "#1f2937") : "transparent", color: isActive ? (tab.key === 'favorites' ? "#e11d48" : "#fff") : "#64748b", fontSize: "0.875rem", fontWeight: isActive ? 600 : 500, cursor: "pointer", transition: "all 0.15s", fontFamily: "'DM Sans', sans-serif", whiteSpace: "nowrap" }}
-                  onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = tab.key === 'favorites' ? "#fff0f3" : "#f1f5f9"; e.currentTarget.style.color = tab.key === 'favorites' ? "#e11d48" : "#1f2937"; } }}
-                  onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#64748b"; } }}
+                <motion.button key={tab.key} onClick={() => tab.key === 'messages' ? router.push('/conversations') : setActiveTab(tab.key)}
+                  whileHover={{ y: -1 }}
+                  whileTap={{ scale: 0.96 }}
+                  style={{ position: "relative", display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", borderRadius: 10, border: "none", background: "transparent", color: isActive ? (isFav ? "#e11d48" : "#fff") : "#64748b", fontSize: "0.875rem", fontWeight: isActive ? 600 : 500, cursor: "pointer", transition: "color 0.2s", fontFamily: "var(--font-inter), sans-serif", whiteSpace: "nowrap" }}
+                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = isFav ? "#e11d48" : "#1e3a8a"; }}
+                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = "#64748b"; }}
                 >
-                  {tab.icon} {tab.label}
-                </button>
+                  {isActive && (
+                    <motion.span
+                      layoutId="dashActiveTab"
+                      transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                      style={{ position: "absolute", inset: 0, borderRadius: 10, background: isFav ? "#fff0f3" : "linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)", border: isFav ? "1px solid #fecdd3" : "none", boxShadow: isFav ? "none" : "0 8px 20px -10px rgba(37,99,235,0.7)", zIndex: 0 }}
+                    />
+                  )}
+                  <span style={{ position: "relative", zIndex: 1, display: "inline-flex", alignItems: "center" }}>{tab.icon}</span>
+                  <span style={{ position: "relative", zIndex: 1 }}>{tab.label}</span>
+                </motion.button>
               );
             })}
           </nav>
@@ -637,6 +671,15 @@ export default function DashboardPage() {
           </div>
         )}
 
+        <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1] }}
+        >
+
         {activeTab === 'dashboard' && (
           <>
             <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 20, marginBottom: 32, alignItems: "start" }}>
@@ -648,22 +691,22 @@ export default function DashboardPage() {
 
               <div style={{ display: "flex", gap: 10, paddingTop: 4, flexWrap: "wrap", animation: "slideUp 0.4s 0.1s ease both", opacity: 0, animationFillMode: "forwards" }}>
                 <button onClick={() => setActiveTab('create')}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 18px", background: "#1f2937", color: "#fff", borderRadius: 10, border: "none", fontSize: "0.875rem", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}
-                  onMouseEnter={e => e.currentTarget.style.background = "#111827"}
-                  onMouseLeave={e => e.currentTarget.style.background = "#1f2937"}>
+                  style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 18px", background: "linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)", color: "#fff", borderRadius: 10, border: "none", fontSize: "0.875rem", fontWeight: 600, cursor: "pointer", fontFamily: "var(--font-inter), sans-serif", boxShadow: "0 10px 24px -12px rgba(37,99,235,0.7)" }}
+                  onMouseEnter={e => e.currentTarget.style.transform = "translateY(-1px)"}
+                  onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}>
                   <IconPlus size={15} /> New listing
                 </button>
                 <Link href="/my-bookings"
-                  style={{ display: "inline-flex", alignItems: "center", padding: "10px 14px", background: "#fff", color: "#1f2937", borderRadius: 10, border: "1px solid #e2e8f0", fontSize: "0.875rem", fontWeight: 600, textDecoration: "none" }}>
+                  style={{ display: "inline-flex", alignItems: "center", padding: "10px 14px", background: "#fff", color: "#1e3a8a", borderRadius: 10, border: "1px solid #e2e8f0", fontSize: "0.875rem", fontWeight: 600, textDecoration: "none" }}>
                   My Bookings
                 </Link>
                 <Link href="/booking-requests"
-                  style={{ display: "inline-flex", alignItems: "center", padding: "10px 14px", background: "#fff", color: "#1f2937", borderRadius: 10, border: "1px solid #e2e8f0", fontSize: "0.875rem", fontWeight: 600, textDecoration: "none" }}>
+                  style={{ display: "inline-flex", alignItems: "center", padding: "10px 14px", background: "#fff", color: "#1e3a8a", borderRadius: 10, border: "1px solid #e2e8f0", fontSize: "0.875rem", fontWeight: 600, textDecoration: "none" }}>
                   Booking Requests
                 </Link>
                
                 <button onClick={() => setActiveTab('favorites')}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "10px 14px", background: "#fff0f3", color: "#e11d48", borderRadius: 10, border: "1px solid #fecdd3", fontSize: "0.875rem", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "10px 14px", background: "#fff0f3", color: "#e11d48", borderRadius: 10, border: "1px solid #fecdd3", fontSize: "0.875rem", fontWeight: 600, cursor: "pointer", fontFamily: "var(--font-inter), sans-serif" }}
                   onMouseEnter={e => e.currentTarget.style.background = "#ffe4e6"}
                   onMouseLeave={e => e.currentTarget.style.background = "#fff0f3"}>
                   <IconHeart size={14} filled /> My Favorites
@@ -685,17 +728,21 @@ export default function DashboardPage() {
                 </div>
                 {allProperties.length > 6 && (
                   <button onClick={() => { setPropertiesFilter('all'); setActiveTab('properties'); }}
-                    style={{ fontSize: "0.8125rem", fontWeight: 600, color: "#1f2937", background: "transparent", border: "1px solid #e2e8f0", cursor: "pointer", display: "flex", alignItems: "center", gap: 5, padding: "6px 14px", borderRadius: 8, fontFamily: "'DM Sans', sans-serif" }}>
+                    style={{ fontSize: "0.8125rem", fontWeight: 600, color: "#1e3a8a", background: "transparent", border: "1px solid #e2e8f0", cursor: "pointer", display: "flex", alignItems: "center", gap: 5, padding: "6px 14px", borderRadius: 8, fontFamily: "var(--font-inter), sans-serif" }}>
                     View all <IconArrow size={12} />
                   </button>
                 )}
               </div>
               {allProperties.length > 0 ? (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(285px, 1fr))", gap: 16 }}>
-                  {allProperties.slice(0, 6).map(p => (
-                    <PropertyCard key={p._id} property={p as PropertyWithOwner} onClick={() => handleViewProperty(p._id)} />
-                  ))}
-                </div>
+                <Stagger className={undefined} gap={0.08}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(285px, 1fr))", gap: 16 }}>
+                    {allProperties.slice(0, 6).map(p => (
+                      <StaggerItem key={p._id}>
+                        <PropertyCard property={p as PropertyWithOwner} onClick={() => handleViewProperty(p._id)} />
+                      </StaggerItem>
+                    ))}
+                  </div>
+                </Stagger>
               ) : (
                 <EmptyState icon={<IconSearch size={36} />} headline="No properties yet" sub="Listings will appear here when added." />
               )}
@@ -712,20 +759,22 @@ export default function DashboardPage() {
             <div style={{ marginBottom: 24, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
               <div style={{ flex: 1, minWidth: 240, position: "relative" }}>
                 <div style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "#94a3b8", pointerEvents: "none" }}><IconSearch size={16} /></div>
-                <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Search by title, location…" style={{ width: "100%", padding: "11px 14px 11px 42px", border: "1px solid #e2e8f0", borderRadius: 10, fontSize: "0.875rem", outline: "none", fontFamily: "'DM Sans', sans-serif", color: "#334155" }} />
+                <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Search by title, location…" style={{ width: "100%", padding: "11px 14px 11px 42px", border: "1px solid #e2e8f0", borderRadius: 10, fontSize: "0.875rem", outline: "none", fontFamily: "var(--font-inter), sans-serif", color: "#334155" }} />
               </div>
               <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                <input value={priceMin} onChange={e => setPriceMin(e.target.value)} placeholder="Min price" type="number" style={{ width: 100, padding: "11px 14px", border: "1px solid #e2e8f0", borderRadius: 10, fontSize: "0.875rem", outline: "none", fontFamily: "'DM Sans', sans-serif", color: "#334155" }} />
+                <input value={priceMin} onChange={e => setPriceMin(e.target.value)} placeholder="Min price" type="number" style={{ width: 100, padding: "11px 14px", border: "1px solid #e2e8f0", borderRadius: 10, fontSize: "0.875rem", outline: "none", fontFamily: "var(--font-inter), sans-serif", color: "#334155" }} />
                 <span style={{ color: "#64748b" }}>to</span>
-                <input value={priceMax} onChange={e => setPriceMax(e.target.value)} placeholder="Max price" type="number" style={{ width: 100, padding: "11px 14px", border: "1px solid #e2e8f0", borderRadius: 10, fontSize: "0.875rem", outline: "none", fontFamily: "'DM Sans', sans-serif", color: "#334155" }} />
+                <input value={priceMax} onChange={e => setPriceMax(e.target.value)} placeholder="Max price" type="number" style={{ width: 100, padding: "11px 14px", border: "1px solid #e2e8f0", borderRadius: 10, fontSize: "0.875rem", outline: "none", fontFamily: "var(--font-inter), sans-serif", color: "#334155" }} />
               </div>
             </div>
             {(() => {
               const display = propertiesFilter === 'available' ? allProperties.filter(p => p.status === 'available') : filteredProperties;
               return display.length > 0 ? (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(285px, 1fr))", gap: 18 }}>
-                  {display.map(p => <PropertyCard key={p._id} property={p as PropertyWithOwner} onClick={() => handleViewProperty(p._id)} />)}
-                </div>
+                <Stagger gap={0.06}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(285px, 1fr))", gap: 18 }}>
+                    {display.map(p => <StaggerItem key={p._id}><PropertyCard property={p as PropertyWithOwner} onClick={() => handleViewProperty(p._id)} /></StaggerItem>)}
+                  </div>
+                </Stagger>
               ) : <EmptyState icon={<IconSearch size={36} />} headline="No properties found" sub="Try adjusting your search terms." />;
             })()}
           </>
@@ -743,7 +792,7 @@ export default function DashboardPage() {
               </div>
             ) : (
               <EmptyState icon={<IconHome size={36} />} headline="No listings yet" sub="List your first property to get started."
-                action={<button onClick={() => setActiveTab('create')} style={{ display: "inline-flex", alignItems: "center", gap: 7, marginTop: 16, padding: "9px 18px", background: "#1f2937", color: "#fff", borderRadius: 9, border: "none", fontSize: "0.8125rem", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}><IconPlus size={14} /> Add property</button>}
+                action={<button onClick={() => setActiveTab('create')} style={{ display: "inline-flex", alignItems: "center", gap: 7, marginTop: 16, padding: "9px 18px", background: "#1e3a8a", color: "#fff", borderRadius: 9, border: "none", fontSize: "0.8125rem", fontWeight: 600, cursor: "pointer", fontFamily: "var(--font-inter), sans-serif" }}><IconPlus size={14} /> Add property</button>}
               />
             )}
           </>
@@ -757,7 +806,7 @@ export default function DashboardPage() {
             </div>
             <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2e8f0", padding: 32, maxWidth: 600 }}>
               <p style={{ fontSize: "0.9375rem", color: "#64748b", margin: "0 0 20px", lineHeight: 1.6 }}>To list a new property, you'll be redirected to the full property creation form.</p>
-              <Link href="/property/create" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 24px", background: "#1f2937", color: "#fff", borderRadius: 10, textDecoration: "none", fontSize: "0.9375rem", fontWeight: 600 }}>
+              <Link href="/property/create" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 24px", background: "linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)", color: "#fff", borderRadius: 10, textDecoration: "none", fontSize: "0.9375rem", fontWeight: 600, boxShadow: "0 10px 24px -12px rgba(37,99,235,0.7)" }}>
                 <IconPlus size={16} /> Create Property Listing
               </Link>
             </div>
@@ -772,7 +821,7 @@ export default function DashboardPage() {
             </div>
             {loadingFavorites ? (
               <div style={{ textAlign: "center", padding: "60px 20px" }}>
-                <div style={{ width: 36, height: 36, border: "2px solid #e2e8f0", borderTopColor: "#1f2937", borderRadius: "50%", animation: "spin 0.7s linear infinite", margin: "0 auto 14px" }} />
+                <div style={{ width: 36, height: 36, border: "2px solid #e2e8f0", borderTopColor: "#1e3a8a", borderRadius: "50%", animation: "spin 0.7s linear infinite", margin: "0 auto 14px" }} />
                 <p style={{ color: "#94a3b8", fontSize: "0.875rem" }}>Loading favorites...</p>
               </div>
             ) : favoriteProperties.length > 0 ? (
@@ -788,7 +837,7 @@ export default function DashboardPage() {
                 sub="Click the ❤️ heart on any property detail page to save it here."
                 action={
                   <button onClick={() => setActiveTab('properties')}
-                    style={{ display: "inline-flex", alignItems: "center", gap: 7, marginTop: 16, padding: "9px 18px", background: "#1f2937", color: "#fff", borderRadius: 9, border: "none", fontSize: "0.8125rem", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>
+                    style={{ display: "inline-flex", alignItems: "center", gap: 7, marginTop: 16, padding: "9px 18px", background: "#1e3a8a", color: "#fff", borderRadius: 9, border: "none", fontSize: "0.8125rem", fontWeight: 600, cursor: "pointer", fontFamily: "var(--font-inter), sans-serif" }}>
                     Browse Properties
                   </button>
                 }
@@ -820,16 +869,18 @@ export default function DashboardPage() {
                 ))}
               </div>
               <div style={{ padding: "16px 28px 24px", display: "flex", gap: 12 }}>
-                <Link href="/user/profile" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "11px 16px", background: "#1f2937", color: "#fff", borderRadius: 10, textDecoration: "none", fontSize: "0.875rem", fontWeight: 600 }}>
+                <Link href="/user/profile" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "11px 16px", background: "#1e3a8a", color: "#fff", borderRadius: 10, textDecoration: "none", fontSize: "0.875rem", fontWeight: 600 }}>
                   <IconUser size={15} /> Edit Profile
                 </Link>
-                <button onClick={onLogout} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "11px 16px", background: "#fef2f2", color: "#ef4444", borderRadius: 10, border: "1px solid #fecaca", fontSize: "0.875rem", fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>
+                <button onClick={onLogout} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "11px 16px", background: "#fef2f2", color: "#ef4444", borderRadius: 10, border: "1px solid #fecaca", fontSize: "0.875rem", fontWeight: 600, cursor: "pointer", fontFamily: "var(--font-inter), sans-serif" }}>
                   <IconLogout size={15} /> Sign Out
                 </button>
               </div>
             </div>
           </div>
         )}
+        </motion.div>
+        </AnimatePresence>
       </main>
     </div>
   );

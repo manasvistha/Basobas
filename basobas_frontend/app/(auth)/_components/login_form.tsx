@@ -205,24 +205,6 @@ export default function LoginForm() {
       <div className="login-box" style={{ position: 'relative' }}>
         <h1 style={{ color: "#1e3a8a" }}>{showPasswordExpired ? "Update your password" : showMfa ? "Two-step verification" : showForgotPassword ? "Reset Password" : "Welcome to BasoBas"}</h1>
 
-        {!showForgotPassword && !showMfa && !showPasswordExpired && (
-          <button
-            onClick={() => setShowForgotPassword(true)}
-            className="text-teal-500 hover:underline text-sm"
-            style={{
-              position: 'absolute',
-              bottom: '45px',
-              right: '10px',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '14px'
-            }}
-          >
-            Forgot Password?
-          </button>
-        )}
-
         {showPasswordExpired ? (
           <form key="expired" onSubmit={(e) => { e.preventDefault(); void onChangeExpiredPassword(); }} className="login-form">
             {errorMessage && (
@@ -349,6 +331,24 @@ export default function LoginForm() {
               </div>
             </div>
 
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "-4px", marginBottom: "4px" }}>
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  color: "#2563eb",
+                  padding: 0,
+                }}
+              >
+                Forgot Password?
+              </button>
+            </div>
+
             <CaptchaWidget onVerify={onCaptchaVerify} />
 
             <button
@@ -403,7 +403,7 @@ export default function LoginForm() {
           ) : (
             <button
               onClick={() => setShowForgotPassword(false)}
-              className="text-teal-500 hover:underline"
+              className="text-blue-700 hover:underline"
               style={{ background: 'none', border: 'none', cursor: 'pointer', color: "#1e3a8a" }}
             >
               Remember your password? Login

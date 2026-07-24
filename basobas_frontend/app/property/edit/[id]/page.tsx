@@ -186,7 +186,7 @@ export default function EditPropertyPage() {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "#f8fafc", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center" }}>
-          <div style={{ width: 40, height: 40, border: "3px solid #e2e8f0", borderTopColor: "#4f46e5", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 16px" }} />
+          <div style={{ width: 40, height: 40, border: "3px solid #e2e8f0", borderTopColor: "#1e3a8a", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 16px" }} />
           <p style={{ color: "#64748b" }}>Loading property...</p>
         </div>
       </div>
@@ -676,7 +676,7 @@ export default function EditPropertyPage() {
                 style={{
                   flex: 1,
                   padding: "0.75rem 1rem",
-                  backgroundColor: loading ? "#9ca3af" : "#4f46e5",
+                  backgroundColor: loading ? "#9ca3af" : "#1e3a8a",
                   color: "white",
                   border: "none",
                   borderRadius: "0.25rem",

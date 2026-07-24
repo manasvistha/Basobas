@@ -248,7 +248,7 @@ export default function UserProfilePage() {
   return (
     <div style={{ minHeight: "100vh", padding: "80px 24px" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, background: "linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(239, 250, 247, 0.65))", border: "1px solid rgba(170, 205, 196, 0.5)", borderRadius: 24, boxShadow: "0 22px 55px -30px rgba(8, 53, 49, 0.35)", padding: "18px 20px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, background: "linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(239, 250, 247, 0.65))", border: "1px solid rgba(226, 232, 240, 0.5)", borderRadius: 24, boxShadow: "0 22px 55px -30px rgba(8, 53, 49, 0.35)", padding: "18px 20px" }}>
           <div>
             <BackPillLink href="/dashboard" label="Back to dashboard" />
             <h1 style={{ fontSize: 30, color: "#0f3d3d", margin: "8px 0" }}>My Profile</h1>
@@ -312,7 +312,7 @@ export default function UserProfilePage() {
                   width: "6rem",
                   height: "6rem",
                   borderRadius: "9999px",
-                  border: "4px solid #4f46e5",
+                  border: "4px solid #1e3a8a",
                 }}
               />
               <div>
@@ -325,8 +325,8 @@ export default function UserProfilePage() {
                     marginTop: "0.75rem",
                     display: "inline-block",
                     padding: "0.25rem 0.75rem",
-                    backgroundColor: "#eef2ff",
-                    color: "#4f46e5",
+                    backgroundColor: "#eff6ff",
+                    color: "#1e3a8a",
                     fontSize: "0.875rem",
                     fontWeight: "500",
                     borderRadius: "0.25rem",
@@ -421,7 +421,7 @@ export default function UserProfilePage() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  border: "3px solid #6366f1",
+                  border: "3px solid #2563eb",
                   boxShadow: "0 6px 18px rgba(15,23,42,0.08)",
                 }}
             >
@@ -551,7 +551,7 @@ export default function UserProfilePage() {
             style={{
               marginTop: 8,
               padding: "10px 14px",
-              backgroundColor: "#6366f1",
+              backgroundColor: "#2563eb",
               color: "white",
               border: "none",
               borderRadius: 10,
@@ -562,10 +562,10 @@ export default function UserProfilePage() {
               width: "100%",
             }}
             onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "#4f46e5")
+              (e.currentTarget.style.backgroundColor = "#1e3a8a")
             }
             onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "#6366f1")
+              (e.currentTarget.style.backgroundColor = "#2563eb")
             }
           >
             {isSaving ? "Saving..." : "Save Changes"}

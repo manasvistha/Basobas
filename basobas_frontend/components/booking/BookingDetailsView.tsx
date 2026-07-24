@@ -151,7 +151,7 @@ export default function BookingDetailsView({ bookingId, mode }: BookingDetailsVi
   return (
     <div style={{ minHeight: "100vh", padding: "32px 20px" }}>
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, background: "linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(239, 250, 247, 0.65))", border: "1px solid rgba(170, 205, 196, 0.5)", borderRadius: 24, boxShadow: "0 22px 55px -30px rgba(8, 53, 49, 0.35)", padding: "18px 20px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, background: "linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(239, 250, 247, 0.65))", border: "1px solid rgba(226, 232, 240, 0.5)", borderRadius: 24, boxShadow: "0 22px 55px -30px rgba(8, 53, 49, 0.35)", padding: "18px 20px" }}>
           <div>
             <BackPillLink href={backHref} label={mode === 'owner' ? 'Back to requests' : 'Back to dashboard'} />
             <h1 style={{ margin: "8px 0 0", color: "#0f172a" }}>Booking Details</h1>
@@ -292,7 +292,7 @@ export default function BookingDetailsView({ bookingId, mode }: BookingDetailsVi
                         <div
                           style={{
                             maxWidth: "72%",
-                            background: mine ? "#4f46e5" : "#f1f5f9",
+                            background: mine ? "#1e3a8a" : "#f1f5f9",
                             color: mine ? "#fff" : "#0f172a",
                             padding: "8px 12px",
                             borderRadius: 10,
@@ -330,7 +330,7 @@ export default function BookingDetailsView({ bookingId, mode }: BookingDetailsVi
                   onClick={handleSendMessage}
                   style={{
                     border: "none",
-                    background: "#4f46e5",
+                    background: "#1e3a8a",
                     color: "#fff",
                     borderRadius: 8,
                     padding: "10px 14px",

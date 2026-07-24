@@ -135,7 +135,7 @@ export default function AdminDashboardPage() {
               width: "3rem",
               height: "3rem",
               border: "3px solid #e2e8f0",
-              borderTopColor: "#4f46e5",
+              borderTopColor: "#1e3a8a",
               borderRadius: "50%",
               animation: "spin 0.8s linear infinite",
               margin: "0 auto 1rem",
@@ -193,7 +193,7 @@ export default function AdminDashboardPage() {
               style={{ height: "2.5rem", width: "auto" }}
             />
             <span
-              style={{ fontSize: "1.25rem", fontWeight: "700", color: "#4f46e5" }}
+              style={{ fontSize: "1.25rem", fontWeight: "700", color: "#1e3a8a" }}
             >
               Basobas Admin
             </span>
@@ -217,7 +217,7 @@ export default function AdminDashboardPage() {
                 justifyContent: 'center',
                 transition: 'border-color 0.15s, box-shadow 0.15s',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#c7d2fe'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(79,70,229,0.08)'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#bfdbfe'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(30, 58, 138,0.08)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none'; }}
               aria-label="Notifications"
             >
@@ -246,7 +246,7 @@ export default function AdminDashboardPage() {
                 cursor: "pointer",
                 transition: "border-color 0.15s, box-shadow 0.15s",
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#c7d2fe"; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(79,70,229,0.08)'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#bfdbfe"; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(30, 58, 138,0.08)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e2e8f0"; e.currentTarget.style.boxShadow = 'none'; }}
             >
               <img
@@ -273,7 +273,7 @@ export default function AdminDashboardPage() {
                   <span style={{ fontWeight: 600, fontSize: 14, color: '#111827' }}>Notifications</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     {notifications.filter(n => !n.isRead).length > 0 && (
-                      <button onClick={handleMarkAllRead} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#4f46e5', fontSize: 12, fontWeight: 600, padding: '4px 8px', borderRadius: 6 }} onMouseEnter={e => e.currentTarget.style.background = '#f0f0ff'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                      <button onClick={handleMarkAllRead} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1e3a8a', fontSize: 12, fontWeight: 600, padding: '4px 8px', borderRadius: 6 }} onMouseEnter={e => e.currentTarget.style.background = '#eff6ff'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                         Mark all read
                       </button>
                     )}
@@ -295,7 +295,7 @@ export default function AdminDashboardPage() {
                   {notifications.map(n => (
                     <div key={n._id} style={{ padding: '12px 16px', borderBottom: '1px solid #f8fafc', background: n.isRead ? '#fff' : '#fafbff', cursor: 'pointer', transition: 'background 0.15s' }} onClick={async () => { try { await handleMarkRead(n._id); } catch (err) { console.error(err); } }} onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={(e) => e.currentTarget.style.background = n.isRead ? '#fff' : '#fafbff'}>
                       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: n.isRead ? 'transparent' : '#4f46e5', marginTop: 6, flexShrink: 0 }} />
+                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: n.isRead ? 'transparent' : '#1e3a8a', marginTop: 6, flexShrink: 0 }} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: 13, color: '#111827', fontWeight: n.isRead ? 400 : 600, marginBottom: 4 }}>{n.message}</div>
                           <div style={{ fontSize: 12, color: '#9ca3af' }}>{new Date(n.createdAt).toLocaleString()}</div>
@@ -361,7 +361,7 @@ export default function AdminDashboardPage() {
                         marginTop: "0.5rem",
                         display: "inline-block",
                         padding: "0.25rem 0.5rem",
-                        backgroundColor: "#4f46e5",
+                        backgroundColor: "#1e3a8a",
                         color: "#fff",
                         fontSize: "0.75rem",
                         fontWeight: "500",
@@ -469,7 +469,7 @@ export default function AdminDashboardPage() {
               style={{
                 padding: "0.5rem 1rem",
                 borderRadius: "0.5rem",
-                backgroundColor: "#4f46e5",
+                backgroundColor: "#1e3a8a",
                 color: "#fff",
                 textDecoration: "none",
                 fontSize: "0.875rem",
@@ -477,10 +477,10 @@ export default function AdminDashboardPage() {
                 transition: "background-color 0.15s",
               }}
               onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "#4338ca")
+                (e.currentTarget.style.backgroundColor = "#152a63")
               }
               onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "#4f46e5")
+                (e.currentTarget.style.backgroundColor = "#1e3a8a")
               }
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ marginRight: 8 }} xmlns="http://www.w3.org/2000/svg"><path d="M3 13h4v-6H3v6zM9 21h4v-14H9v14zM15 7h4v10h-4V7z" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -497,7 +497,7 @@ export default function AdminDashboardPage() {
                 fontWeight: "600",
                 transition: "color 0.15s",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#4f46e5")}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#1e3a8a")}
               onMouseLeave={(e) => (e.currentTarget.style.color = "#64748b")}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ marginRight: 8 }} xmlns="http://www.w3.org/2000/svg"><path d="M17 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" stroke="#64748b" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="7" r="4" stroke="#64748b" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -514,7 +514,7 @@ export default function AdminDashboardPage() {
                 fontWeight: "600",
                 transition: "color 0.15s",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#4f46e5")}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#1e3a8a")}
               onMouseLeave={(e) => (e.currentTarget.style.color = "#64748b")}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ marginRight: 8 }} xmlns="http://www.w3.org/2000/svg"><path d="M3 11l9-7 9 7v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-8z" stroke="#64748b" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -573,11 +573,11 @@ export default function AdminDashboardPage() {
             <p style={{ color: '#6b7280', marginTop: 6, fontSize: 13 }}>Overview of platform activity</p>
           </div>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            <div style={{ padding: '0.6rem 0.9rem', borderRadius: 10, border: '1px solid #eef2ff', background: '#fbfbff', display: 'flex', gap: 10, alignItems: 'center' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20c4.418 0 8-1.79 8-4v-4" stroke="#4f46e5" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 12c0 2.21 3.582 4 8 4s8-1.79 8-4" stroke="#4f46e5" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <div style={{ padding: '0.6rem 0.9rem', borderRadius: 10, border: '1px solid #eff6ff', background: '#fbfbff', display: 'flex', gap: 10, alignItems: 'center' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20c4.418 0 8-1.79 8-4v-4" stroke="#1e3a8a" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 12c0 2.21 3.582 4 8 4s8-1.79 8-4" stroke="#1e3a8a" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               <div><div style={{ fontWeight: 700 }}>{totalUsers !== null ? totalUsers.toLocaleString() : '—'}</div><div style={{ fontSize: 12, color: '#6b7280' }}>Total Users</div></div>
             </div>
-            <div style={{ padding: '0.6rem 0.9rem', borderRadius: 10, border: '1px solid #eef2ff', background: '#fbfbff', display: 'flex', gap: 10, alignItems: 'center' }}>
+            <div style={{ padding: '0.6rem 0.9rem', borderRadius: 10, border: '1px solid #eff6ff', background: '#fbfbff', display: 'flex', gap: 10, alignItems: 'center' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 11h18v10H3zM7 7l5-4 5 4" stroke="#10b981" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               <div><div style={{ fontWeight: 700 }}>{totalProperties !== null ? totalProperties.toLocaleString() : '—'}</div><div style={{ fontSize: 12, color: '#6b7280' }}>Properties</div></div>
             </div>
@@ -649,7 +649,7 @@ export default function AdminDashboardPage() {
                     width: "3rem",
                     height: "3rem",
                     borderRadius: "0.75rem",
-                    backgroundColor: "#4f46e5",
+                    backgroundColor: "#1e3a8a",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -805,7 +805,7 @@ export default function AdminDashboardPage() {
                     width: "3rem",
                     height: "3rem",
                     borderRadius: "0.75rem",
-                    backgroundColor: "#0b5e58",
+                    backgroundColor: "#1e3a8a",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",

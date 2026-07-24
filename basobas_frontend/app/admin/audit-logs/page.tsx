@@ -95,7 +95,7 @@ export default function AdminAuditLogsPage() {
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 16px" }}>
       <BackPillLink href="/admin/dashboard" label="Back to dashboard" />
 
-      <h1 style={{ fontSize: 26, fontWeight: 700, margin: "12px 0 4px", color: "#0b5e58" }}>
+      <h1 style={{ fontSize: 26, fontWeight: 700, margin: "12px 0 4px", color: "#1e3a8a" }}>
         Security Audit Log
       </h1>
       <p style={{ color: "#64748b", marginBottom: 16 }}>
@@ -200,6 +200,6 @@ const pageBtn = (disabled: boolean): React.CSSProperties => ({
   borderRadius: 8,
   border: "1px solid #cbd5e1",
   background: disabled ? "#f1f5f9" : "#fff",
-  color: disabled ? "#94a3b8" : "#0b5e58",
+  color: disabled ? "#94a3b8" : "#1e3a8a",
   cursor: disabled ? "not-allowed" : "pointer",
 });
