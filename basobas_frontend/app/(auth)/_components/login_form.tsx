@@ -202,8 +202,8 @@ export default function LoginForm() {
         <span className={styles.switchLabel}>Admin</span>
       </div>
 
-      <div className="login-box" style={{ position: 'relative', background: "linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(239, 250, 247, 0.65))", border: "1px solid rgba(170, 205, 196, 0.5)", boxShadow: "0 22px 55px -30px rgba(8, 53, 49, 0.35)" }}>
-        <h1 style={{ color: "#0b5e58" }}>{showPasswordExpired ? "Update your password" : showMfa ? "Two-step verification" : showForgotPassword ? "Reset Password" : "Welcome to BasoBas"}</h1>
+      <div className="login-box" style={{ position: 'relative' }}>
+        <h1 style={{ color: "#1e3a8a" }}>{showPasswordExpired ? "Update your password" : showMfa ? "Two-step verification" : showForgotPassword ? "Reset Password" : "Welcome to BasoBas"}</h1>
 
         {!showForgotPassword && !showMfa && !showPasswordExpired && (
           <button
@@ -260,7 +260,7 @@ export default function LoginForm() {
             <button
               type="submit"
               disabled={isLoading}
-              style={{ marginTop: "8px", background: "linear-gradient(135deg, #0b5e58 0%, #0f7670 100%)", color: "white", padding: "10px 20px", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "16px", fontWeight: "500", opacity: isLoading ? 0.7 : 1 }}
+              style={{ marginTop: "8px", background: "linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)", color: "white", padding: "10px 20px", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "16px", fontWeight: "500", opacity: isLoading ? 0.7 : 1 }}
             >
               {isLoading ? "Updating..." : "Update password"}
             </button>
@@ -293,14 +293,14 @@ export default function LoginForm() {
             <button
               type="submit"
               disabled={isLoading || otp.length < 6}
-              style={{ marginTop: "8px", background: "linear-gradient(135deg, #0b5e58 0%, #0f7670 100%)", color: "white", padding: "10px 20px", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "16px", fontWeight: "500", opacity: isLoading || otp.length < 6 ? 0.7 : 1 }}
+              style={{ marginTop: "8px", background: "linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)", color: "white", padding: "10px 20px", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "16px", fontWeight: "500", opacity: isLoading || otp.length < 6 ? 0.7 : 1 }}
             >
               {isLoading ? "Verifying..." : "Verify"}
             </button>
             <button
               type="button"
               onClick={() => { setShowMfa(false); setOtp(""); setMfaToken(""); setErrorMessage(""); }}
-              style={{ marginTop: 10, background: "none", border: "none", color: "#0b5e58", cursor: "pointer", fontSize: 14 }}
+              style={{ marginTop: 10, background: "none", border: "none", color: "#1e3a8a", cursor: "pointer", fontSize: 14 }}
             >
               Back to login
             </button>
@@ -356,7 +356,7 @@ export default function LoginForm() {
               disabled={isLoading || (isCaptchaEnabled() && !captchaToken)}
               style={{
                 marginTop: "8px",
-                background: "linear-gradient(135deg, #0b5e58 0%, #0f7670 100%)",
+                background: "linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)",
                 color: "white",
                 padding: "10px 20px",
                 border: "none",
@@ -389,7 +389,7 @@ export default function LoginForm() {
               </div>
             </div>
 
-            <button type="submit" disabled={forgotPasswordForm.formState.isSubmitting} style={{ marginTop: "8px", background: "linear-gradient(135deg, #0b5e58 0%, #0f7670 100%)", color: "white", padding: "10px 20px", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "16px", fontWeight: "500" }}>
+            <button type="submit" disabled={forgotPasswordForm.formState.isSubmitting} style={{ marginTop: "8px", background: "linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)", color: "white", padding: "10px 20px", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "16px", fontWeight: "500" }}>
               {forgotPasswordForm.formState.isSubmitting ? "Sending..." : "Send Reset Link"}
             </button>
           </form>
@@ -398,13 +398,13 @@ export default function LoginForm() {
         <p className="signup-text">
           {!showForgotPassword ? (
             <>
-              Don't have an account? <Link href="/register" style={{ color: "#0b5e58" }}>Sign Up</Link>
+              Don't have an account? <Link href="/register" style={{ color: "#1e3a8a" }}>Sign Up</Link>
             </>
           ) : (
             <button
               onClick={() => setShowForgotPassword(false)}
               className="text-teal-500 hover:underline"
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: "#0b5e58" }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: "#1e3a8a" }}
             >
               Remember your password? Login
             </button>

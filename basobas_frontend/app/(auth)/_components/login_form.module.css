@@ -8,7 +8,7 @@
 
 .switchLabel {
   font-size: 14px;
-  color: #555;
+  color: #475569;
   font-weight: 500;
   min-width: 40px;
 }
@@ -51,7 +51,7 @@
 }
 
 input:checked + .slider {
-  background-color: teal;
+  background-color: #2563eb;
 }
 
 input:checked + .slider:before {

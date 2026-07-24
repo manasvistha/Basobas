@@ -171,7 +171,7 @@ export default function RegisterForm() {
             type="submit"
             disabled={isLoading || (isCaptchaEnabled() && !captchaToken)}
             style={{
-              background: "linear-gradient(135deg, #0b5e58 0%, #0f7670 100%)",
+              background: "linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)",
               color: "white",
               marginTop: "20px",
               padding: "12px",
@@ -189,7 +189,7 @@ export default function RegisterForm() {
 
         <p className="signup-text">
           Already have an account?{" "}
-          <Link href="/login" style={{ color: "#0b5e58" }}>
+          <Link href="/login" style={{ color: "#1e3a8a" }}>
             Log in
           </Link>
         </p>

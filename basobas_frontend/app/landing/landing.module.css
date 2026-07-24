@@ -1,0 +1,297 @@
+.page {
+  background: var(--lux-bg);
+  overflow-x: hidden;
+}
+
+/* ---------------- Hero ---------------- */
+.hero {
+  position: relative;
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
+  margin-top: -84px; /* pull under the transparent navbar */
+  padding: 140px 24px 90px;
+  overflow: hidden;
+}
+.heroBg {
+  position: absolute;
+  inset: 0;
+  background-image: url("/room img.jpg");
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.05);
+}
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(15, 23, 42, 0.82) 0%, rgba(15, 23, 42, 0.55) 45%, rgba(30, 58, 138, 0.35) 100%);
+}
+.heroInner {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+.heroEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  color: #e2e8f0;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 22px;
+}
+.heroDot { width: 8px; height: 8px; border-radius: 50%; background: var(--lux-accent); box-shadow: 0 0 12px var(--lux-accent); }
+.heroTitle {
+  font-size: clamp(2.6rem, 6vw, 4.6rem);
+  line-height: 1.05;
+  font-weight: 800;
+  color: #fff;
+  max-width: 900px;
+  letter-spacing: -0.02em;
+}
+.heroTitle .grad {
+  background: linear-gradient(120deg, #60a5fa, #38bdf8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.heroSub {
+  margin-top: 22px;
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  color: #cbd5e1;
+  max-width: 560px;
+  line-height: 1.6;
+}
+.heroCtas { margin-top: 34px; display: flex; gap: 14px; flex-wrap: wrap; }
+.ctaPrimary {
+  padding: 15px 30px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 16px;
+  color: #fff;
+  text-decoration: none;
+  background: var(--lux-grad);
+  background-size: 160% 160%;
+  box-shadow: 0 18px 38px -14px rgba(37, 99, 235, 0.8);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-position 0.6s ease;
+}
+.ctaPrimary:hover { transform: translateY(-3px) scale(1.03); background-position: right center; box-shadow: 0 26px 50px -14px rgba(37, 99, 235, 0.85); }
+.ctaGhost {
+  padding: 15px 28px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 16px;
+  color: #fff;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+.ctaGhost:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-3px); }
+
+/* ---------------- Floating search ---------------- */
+.searchWrap {
+  position: relative;
+  max-width: 1080px;
+  margin: -46px auto 0;
+  padding: 0 24px;
+  z-index: 20;
+}
+.searchCard {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 22px;
+  box-shadow: var(--lux-shadow);
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr auto;
+  gap: 8px;
+}
+.searchField { display: flex; flex-direction: column; padding: 10px 16px; border-radius: 14px; transition: background 0.25s ease; }
+.searchField:hover { background: rgba(37, 99, 235, 0.05); }
+.searchLabel { font-size: 12px; font-weight: 600; color: var(--lux-muted); margin-bottom: 3px; }
+.searchInput { border: none; background: transparent; font-size: 15px; color: var(--lux-text); outline: none; width: 100%; }
+.searchBtn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 0 26px;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  background: var(--lux-grad);
+  background-size: 160% 160%;
+  transition: transform 0.25s ease, background-position 0.5s ease;
+}
+.searchBtn:hover { transform: scale(1.04); background-position: right center; }
+
+/* ---------------- Section shells ---------------- */
+.section { max-width: 1200px; margin: 0 auto; padding: 90px 24px; }
+.sectionHead { text-align: center; max-width: 640px; margin: 0 auto 54px; }
+.kicker { color: var(--lux-secondary); font-weight: 700; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; }
+.sectionTitle { font-size: clamp(1.9rem, 3.6vw, 2.8rem); font-weight: 800; color: var(--lux-text); margin-top: 10px; letter-spacing: -0.02em; }
+.sectionText { color: var(--lux-muted); margin-top: 14px; font-size: 1.05rem; line-height: 1.6; }
+
+/* ---------------- Stats ---------------- */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.statCard {
+  background: var(--lux-card);
+  border: 1px solid var(--lux-border);
+  border-radius: var(--lux-radius);
+  padding: 28px;
+  text-align: center;
+  box-shadow: var(--lux-shadow-sm);
+}
+.statNum { font-family: var(--font-poppins), sans-serif; font-size: 2.4rem; font-weight: 800; color: var(--lux-primary); }
+.statLabel { color: var(--lux-muted); font-weight: 500; margin-top: 4px; }
+
+/* ---------------- Category intro (text + image) ---------------- */
+.introGrid {
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+  gap: 56px;
+  align-items: center;
+  margin-bottom: 56px;
+}
+.introText { max-width: 480px; }
+.introText .sectionTitle { text-align: left; }
+.introMedia {
+  position: relative;
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: var(--lux-shadow-lg);
+  aspect-ratio: 4 / 3;
+}
+.introImg {
+  position: absolute;
+  inset: 0;
+  background-image: url("/room img.jpg");
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.introMedia:hover .introImg { transform: scale(1.06); }
+.introImgShade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(200deg, transparent 40%, rgba(30, 58, 138, 0.35));
+}
+.introFloat {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: var(--lux-shadow);
+}
+.introFloatIcon {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: grid; place-items: center;
+  background: var(--lux-grad); color: #fff;
+}
+.introFloatNum { font-family: var(--font-poppins), sans-serif; font-weight: 800; color: var(--lux-text); font-size: 1.05rem; line-height: 1.1; }
+.introFloatLabel { color: var(--lux-muted); font-size: 12px; }
+
+/* ---------------- Category cards ---------------- */
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+.card {
+  position: relative;
+  border-radius: 22px;
+  overflow: hidden;
+  min-height: 340px;
+  display: flex;
+  align-items: flex-end;
+  padding: 26px;
+  color: #fff;
+  text-decoration: none;
+  box-shadow: var(--lux-shadow);
+  transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), box-shadow 0.4s ease;
+}
+.cardImg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  transition: transform 0.6s cubic-bezier(0.22,1,0.36,1);
+}
+.cardShade { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,23,42,0.85) 8%, rgba(15,23,42,0.15) 60%, transparent); }
+.card:hover { transform: translateY(-8px); box-shadow: var(--lux-shadow-lg); }
+.card:hover .cardImg { transform: scale(1.08); }
+.cardBody { position: relative; z-index: 2; }
+.cardBadge {
+  display: inline-block; padding: 5px 12px; border-radius: 999px;
+  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.25);
+  backdrop-filter: blur(6px); font-size: 12px; font-weight: 600; margin-bottom: 12px;
+}
+.cardTitle { font-size: 1.5rem; font-weight: 700; }
+.cardText { color: #e2e8f0; margin-top: 6px; font-size: 0.95rem; }
+.cardArrow { margin-top: 14px; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+
+/* ---------------- Features ---------------- */
+.features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.feature {
+  background: var(--lux-card);
+  border: 1px solid var(--lux-border);
+  border-radius: var(--lux-radius);
+  padding: 30px;
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+.feature:hover { transform: translateY(-6px); box-shadow: var(--lux-shadow); border-color: rgba(37,99,235,0.3); }
+.featureIcon {
+  width: 54px; height: 54px; border-radius: 15px;
+  display: grid; place-items: center; margin-bottom: 18px;
+  background: var(--lux-grad-soft); color: var(--lux-secondary);
+}
+.featureTitle { font-size: 1.2rem; font-weight: 700; color: var(--lux-text); }
+.featureText { color: var(--lux-muted); margin-top: 8px; line-height: 1.6; }
+
+/* ---------------- CTA band ---------------- */
+.ctaBand { max-width: 1200px; margin: 0 auto; padding: 0 24px 100px; }
+.ctaInner {
+  position: relative;
+  overflow: hidden;
+  border-radius: 30px;
+  padding: 64px 48px;
+  text-align: center;
+  background: var(--lux-grad);
+  box-shadow: var(--lux-shadow-lg);
+}
+.ctaGlow { position: absolute; width: 360px; height: 360px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.28), transparent 70%); top: -120px; left: -60px; }
+.ctaGlow2 { position: absolute; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(56,189,248,0.4), transparent 70%); bottom: -120px; right: -40px; }
+.ctaTitle { position: relative; font-size: clamp(1.8rem, 3.6vw, 2.7rem); font-weight: 800; color: #fff; }
+.ctaText { position: relative; color: rgba(255,255,255,0.85); margin-top: 12px; font-size: 1.1rem; }
+.ctaBtn {
+  position: relative;
+  display: inline-block; margin-top: 26px;
+  padding: 15px 34px; border-radius: 999px;
+  background: #fff; color: var(--lux-primary);
+  font-weight: 700; text-decoration: none;
+  box-shadow: 0 16px 30px -12px rgba(0,0,0,0.35);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.ctaBtn:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 24px 44px -14px rgba(0,0,0,0.4); }
+
+@media (max-width: 960px) {
+  .searchCard { grid-template-columns: 1fr 1fr; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .cards, .features { grid-template-columns: 1fr; }
+  .introGrid { grid-template-columns: 1fr; gap: 32px; }
+  .introText { max-width: none; }
+}
+@media (max-width: 560px) {
+  .searchCard { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: 1fr; }
+}
