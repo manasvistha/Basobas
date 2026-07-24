@@ -1,0 +1,47 @@
+# Reproducible full-stack setup: MongoDB + backend API + Next.js frontend.
+#   docker compose up --build
+# Copy .env.example -> .env and set secrets before running in anything but local dev.
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build: ./basobas_backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      LOCAL_DB_URI: mongodb://mongo:27017/basobas
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-}
+      BCRYPT_ROUNDS: ${BCRYPT_ROUNDS:-12}
+      CLIENT_URL: ${CLIENT_URL:-http://localhost:3000}
+      # Optional integrations (leave unset to keep dormant)
+      CAPTCHA_PROVIDER: ${CAPTCHA_PROVIDER:-}
+      CAPTCHA_SECRET: ${CAPTCHA_SECRET:-}
+      EMAIL_USER: ${EMAIL_USER:-}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD:-}
+      ADMIN_ALERT_EMAIL: ${ADMIN_ALERT_EMAIL:-}
+    volumes:
+      - backend-uploads:/app/uploads
+
+  frontend:
+    build: ./basobas_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:
+  backend-uploads:

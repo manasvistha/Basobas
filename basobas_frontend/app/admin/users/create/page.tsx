@@ -82,7 +82,7 @@ export default function AdminCreateUserPage() {
   return (
     <div style={{ minHeight: "100vh", padding: "80px 24px" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, background: "linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(239, 250, 247, 0.65))", border: "1px solid rgba(170, 205, 196, 0.5)", borderRadius: 24, boxShadow: "0 22px 55px -30px rgba(8, 53, 49, 0.35)", padding: "18px 20px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, background: "linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(239, 250, 247, 0.65))", border: "1px solid rgba(226, 232, 240, 0.5)", borderRadius: 24, boxShadow: "0 22px 55px -30px rgba(8, 53, 49, 0.35)", padding: "18px 20px" }}>
           <div>
             <BackPillLink href="/admin/users" label="Back to users" />
             <h1 style={{ fontSize: 30, color: "#0f3d3d", margin: "8px 0" }}>Create User</h1>
@@ -256,7 +256,7 @@ export default function AdminCreateUserPage() {
             style={{
               marginTop: 8,
               padding: "12px 20px",
-              background: "teal",
+              background: "#1e3a8a",
               color: "white",
               border: "none",
               borderRadius: 8,

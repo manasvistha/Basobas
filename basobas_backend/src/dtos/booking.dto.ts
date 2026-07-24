@@ -15,7 +15,7 @@ export const CreateBookingSchema = z.object({
     currency: z.string().optional(),
     status: z.enum(['pending', 'success', 'failed']).optional(),
     transactionId: z.string().optional(),
-    meta: z.record(z.any()).optional()
+    meta: z.record(z.string(), z.any()).optional()
   }).optional()
 });
 

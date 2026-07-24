@@ -1,28 +1,24 @@
-import Image from "next/image";
 import LoginForm from "../_components/login_form";
 
 export default function LoginPage() {
   return (
-    <div className="login-container">
-      <div className="login-left">
-        <div className="login-logo">
-          <Image
-            src="/basobas.png"
-            alt="BasoBas"
-            width={150}
-            height={80}
-            priority
-          />
-        </div>
-        <Image
-          src="/illustration.png"
-          alt="Login Illustration"
-          fill
-          priority
-          className="login-illustration"
-        />
+    <div className="auth-frame">
+      <div className="auth-card">
+        <aside className="auth-left">
+          <div className="auth-left-img" />
+          <div className="auth-left-overlay" />
+          <div className="auth-left-content">
+            <h1 className="auth-left-title">Welcome Back</h1>
+            <p className="auth-left-text">
+              Sign in to pick up where you left off — your saved rooms, messages, and
+              listings are waiting for you.
+            </p>
+          </div>
+          <span className="auth-brand-chip">presented by BasoBas</span>
+        </aside>
+
+        <LoginForm />
       </div>
-      <LoginForm />
     </div>
   );
 }

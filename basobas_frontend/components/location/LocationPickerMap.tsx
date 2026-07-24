@@ -260,8 +260,8 @@ export default function LocationPickerMap({
             style={{
               padding: "8px 12px",
               borderRadius: 8,
-              border: "1px solid #4f46e5",
-              background: "#4f46e5",
+              border: "1px solid #1e3a8a",
+              background: "#1e3a8a",
               color: "#fff",
               cursor: searching ? "not-allowed" : "pointer",
               fontSize: 13,

@@ -3,28 +3,18 @@ import { API } from "./endpoints";
 
 export const register = async ( registerData : any ) => {
     try{
-        console.log('Registering user with data:', registerData);
-        console.log('Register endpoint:', API.AUTH.REGISTER);
-        console.log('Axios baseURL:', axios.defaults.baseURL);
-        console.log('Full URL will be:', axios.defaults.baseURL + API.AUTH.REGISTER);
         const response = await axios.post(
             API.AUTH.REGISTER, //path
             registerData //body data
         );
-        console.log('Register response:', response.data);
         return response.data;
     } catch (err: Error | any) {
-        console.error('Register error object:', err);
-        console.error('Register error response:', err.response?.data);
-        console.error('Register error message:', err.message);
-        console.error('Register error status:', err.response?.status);
-        const errorMessage = 
-            err.response?.data?.message 
+        const errorMessage =
+            err.response?.data?.message
             || err.response?.data?.error
-            || err.message 
+            || err.message
             || "Registration failed";
-        console.error('Final error message:', errorMessage);
-        throw { 
+        throw {
             message: errorMessage,
             status: err.response?.status,
             data: err.response?.data
@@ -34,28 +24,25 @@ export const register = async ( registerData : any ) => {
 
 export const login = async ( loginData : any ) => {
     try{
-        console.log('Logging in user with data:', loginData);
-        console.log('Login endpoint:', API.AUTH.LOGIN);
-        console.log('Axios baseURL:', axios.defaults.baseURL);
-        console.log('Full URL will be:', axios.defaults.baseURL + API.AUTH.LOGIN);
         const response = await axios.post(
-            API.AUTH.LOGIN, 
-            loginData 
+            API.AUTH.LOGIN,
+            loginData
         );
-        console.log('Login response:', response.data);
         return response.data;
     } catch (err: Error | any) {
-        console.error('Login error object:', err);
-        console.error('Login error response:', err.response?.data);
-        console.error('Login error message:', err.message);
-        console.error('Login error status:', err.response?.status);
-        const errorMessage = 
-            err.response?.data?.message 
+        // A wrong email/password is an expected outcome, not a program error —
+        // surface a friendly message to the form; do not log to the console
+        // (that would trip the Next.js dev error overlay and leak credentials).
+        const raw =
+            err.response?.data?.message
             || err.response?.data?.error
-            || err.message 
+            || err.message
             || "Login failed";
-        console.error('Final error message:', errorMessage);
-        throw { 
+        const errorMessage =
+            raw === "Invalid credentials"
+                ? "Incorrect email or password. Please try again."
+                : raw;
+        throw {
             message: errorMessage,
             status: err.response?.status,
             data: err.response?.data
@@ -102,6 +89,15 @@ export const exportMyData = async () => {
     // Download the authenticated user's own data as a JSON Blob.
     const response = await axios.get(API.AUTH.EXPORT_DATA, { responseType: 'blob' });
     return response.data as Blob;
+};
+
+export const importMyData = async (file: File) => {
+    // Upload a previously-exported JSON file to restore the current user's own
+    // profile and property listings. The server ignores any ids in the file.
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await axios.post(API.AUTH.IMPORT_DATA, formData);
+    return response.data;
 };
 
 export const getProfile = async () => {

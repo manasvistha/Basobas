@@ -69,15 +69,15 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     return (
         <div className="reset-password-container">
             <div className="reset-password-box">
-                <Link href="/login" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", color: "#0b5e58", fontSize: "0.8125rem", fontFamily: "'Outfit', sans-serif", transition: "all 0.2s", padding: "6px 12px", borderRadius: 6, border: "1px solid rgba(15, 118, 110, 0.2)", marginBottom: "20px", width: "fit-content" }}
+                <Link href="/login" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", color: "#1e3a8a", fontSize: "0.8125rem", fontFamily: "var(--font-inter), sans-serif", transition: "all 0.2s", padding: "6px 12px", borderRadius: 6, border: "1px solid rgba(37, 99, 235, 0.2)", marginBottom: "20px", width: "fit-content" }}
                     onMouseEnter={e => {
-                        e.currentTarget.style.color = "#0b5e58";
-                        e.currentTarget.style.borderColor = "rgba(15, 118, 110, 0.4)";
-                        e.currentTarget.style.background = "rgba(15, 118, 110, 0.08)";
+                        e.currentTarget.style.color = "#1e3a8a";
+                        e.currentTarget.style.borderColor = "rgba(37, 99, 235, 0.4)";
+                        e.currentTarget.style.background = "rgba(37, 99, 235, 0.08)";
                     }}
                     onMouseLeave={e => {
-                        e.currentTarget.style.color = "#0b5e58";
-                        e.currentTarget.style.borderColor = "rgba(15, 118, 110, 0.2)";
+                        e.currentTarget.style.color = "#1e3a8a";
+                        e.currentTarget.style.borderColor = "rgba(37, 99, 235, 0.2)";
                         e.currentTarget.style.background = "transparent";
                     }}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>

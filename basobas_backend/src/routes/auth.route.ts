@@ -6,6 +6,13 @@ import { PERMISSIONS } from "../config/rbac.ts";
 import { uploadProfilePicture } from "../middlewears/uploadProfilePicture.middlewears.ts";
 import { authLimiter, sensitiveLimiter } from "../middlewears/rate-limit.middlewears.ts";
 import { requireCaptcha } from "../middlewears/captcha.middlewears.ts";
+import multer from "multer";
+
+// In-memory upload for the data-import JSON file (parsed, never persisted to disk).
+const importUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+});
 
 
 const router = Router();
@@ -24,6 +31,7 @@ router.post("/password/change-expired", authLimiter, authController.changeExpire
 router.get("/profile", authorize, authController.getProfile);
 router.get("/current-user", authorize, authController.getProfile); // Alias for compatibility
 router.get("/export-data", sensitiveLimiter, authorize, authController.exportMyData);
+router.post("/import-data", sensitiveLimiter, authorize, requirePermission(PERMISSIONS.PROFILE_WRITE_OWN), importUpload.single("file"), authController.importMyData);
 router.post("/mfa/setup", authorize, authController.mfaSetup);
 router.post("/mfa/enable", authorize, authController.mfaEnable);
 router.post("/mfa/disable", authorize, authController.mfaDisable);

@@ -24,8 +24,6 @@ export default function CreatePropertyPage() {
     parking: "",
     petPolicy: "",
     amenities: "",
-    availabilityStart: "",
-    availabilityEnd: "",
   });
   const [images, setImages] = useState<File[]>([]);
   const [coordinates, setCoordinates] = useState<PropertyCoordinates | null>(null);
@@ -67,10 +65,6 @@ export default function CreatePropertyPage() {
       formDataToSend.append("parking", formData.parking === "true" ? "true" : "false");
       formDataToSend.append("petPolicy", formData.petPolicy);
       formDataToSend.append("amenities", formData.amenities ? formData.amenities.split(",").map((a: string) => a.trim()).filter((a: string) => a.length > 0).join(",") : "");
-      formDataToSend.append("availability", JSON.stringify([{
-        startDate: formData.availabilityStart,
-        endDate: formData.availabilityEnd,
-      }]));
       if (isValidCoordinates(coordinates)) {
         formDataToSend.append("coordinates", JSON.stringify(coordinates));
       }
@@ -83,8 +77,14 @@ export default function CreatePropertyPage() {
       const response = await createProperty(formDataToSend);
       const createdId = response?._id || response?.id;
       router.push(`/property/${createdId}`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create property");
+    } catch (err: any) {
+      // Surface the backend's actual validation message (it returns { error })
+      // instead of axios's generic "Request failed with status code 400".
+      const msg =
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        (err instanceof Error ? err.message : "Failed to create property");
+      setError(msg);
     } finally {
       setLoading(false);
     }

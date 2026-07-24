@@ -8,10 +8,12 @@ import { NotificationService } from "../services/notification.service";
 import { ConversationService } from "../services/conversation.service";
 import { MfaService } from "../services/mfa.service";
 import { registerDTO, loginDTO } from "../dtos/user.dto";
+import { CreatePropertySchema } from "../dtos/property.dto";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
 import { assertStrongPassword } from "../utils/password-policy";
 import { recordFailedLogin, clearFailedLogins } from "../middlewears/failed-login.middlewears";
+import { recordAudit, AUDIT } from "../utils/audit";
 import { AUTH_COOKIE, authCookieOptions, clearCookieOptions } from "../config/session";
 
 const authService = new AuthService();
@@ -43,10 +45,15 @@ export class AuthController {
       // 2. Call service to create user
       const user = await authService.register(validatedData);
       
+      recordAudit(req, AUDIT.REGISTER, {
+        actorId: (user as any)?.id || (user as any)?._id?.toString(),
+        actorEmail: (user as any)?.email,
+      });
+
       // 3. Return response - Flutter looks for 'success' and 'user'
-      return res.status(201).json({ 
+      return res.status(201).json({
         success: true,
-        message: "Registration successful", 
+        message: "Registration successful",
         user: user // user object is already serialized without password
       });
     } catch (error: any) {
@@ -119,6 +126,11 @@ export class AuthController {
       // Note: authService.login already calls toJSON(), so result.user is already serialized
       // Set the secure, HttpOnly session cookie (web clients authenticate via this).
       res.cookie(AUTH_COOKIE, result.token, authCookieOptions());
+      recordAudit(req, AUDIT.LOGIN_SUCCESS, {
+        actorId: (result.user as any).id,
+        actorEmail: (result.user as any).email,
+        actorRole: (result.user as any).role,
+      });
       return res.status(200).json({
         success: true,
         token: result.token, // Matching: response.data['token'] in Flutter login()
@@ -129,6 +141,11 @@ export class AuthController {
 
       // Failed authentication — count it toward the auto-block threshold.
       recordFailedLogin(req);
+      recordAudit(req, AUDIT.LOGIN_FAILURE, {
+        status: "failure",
+        actorEmail: (req.body?.email || "").toString().trim().toLowerCase(),
+        metadata: { reason: error.message },
+      });
 
       return res.status(401).json({
         success: false,
@@ -141,6 +158,7 @@ export class AuthController {
   // Clear the session cookie (logout). Works whether or not a valid token is present.
   async logout(req: Request, res: Response) {
     res.clearCookie(AUTH_COOKIE, clearCookieOptions());
+    recordAudit(req, AUDIT.LOGOUT);
     return res.status(200).json({ success: true, message: "Logged out successfully" });
   }
 
@@ -174,9 +192,15 @@ export class AuthController {
         return res.status(200).json({ success: true, passwordExpired: true, changeToken });
       }
       res.cookie(AUTH_COOKIE, result.token, authCookieOptions());
+      recordAudit(req, AUDIT.MFA_VERIFY_SUCCESS, {
+        actorId: (result.user as any)?.id,
+        actorEmail: (result.user as any)?.email,
+        actorRole: (result.user as any)?.role,
+      });
       return res.status(200).json({ success: true, token: result.token, data: result.user });
     } catch (error: any) {
       recordFailedLogin(req);
+      recordAudit(req, AUDIT.MFA_VERIFY_FAILURE, { status: "failure", metadata: { reason: error.message } });
       return res.status(401).json({ success: false, message: error.message || "MFA verification failed" });
     }
   }
@@ -332,6 +356,7 @@ export class AuthController {
       const filename = `basobas-data-${new Date().toISOString().slice(0, 10)}.json`;
       res.setHeader("Content-Type", "application/json");
       res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+      recordAudit(req, AUDIT.DATA_EXPORTED, { targetType: "user", targetId: userId });
       return res.status(200).send(JSON.stringify(exportPayload, null, 2));
     } catch (error: any) {
       console.error("Export Data Error:", error.message);
@@ -339,6 +364,100 @@ export class AuthController {
         success: false,
         message: error.message || "Failed to export data",
       });
+    }
+  }
+
+  // Import a previously-exported data file back into the CURRENT user's own
+  // account. Security posture mirrors the export's privacy guarantees:
+  //  - Ownership comes from the JWT (req.user.id) ONLY — any ids inside the file
+  //    are ignored, so you can never import into another account (no IDOR).
+  //  - Only a strict field whitelist is restored; role, password, MFA secret and
+  //    lockout state can never be set via import (no mass assignment / privilege
+  //    escalation).
+  //  - Only profile fields and the user's OWN property listings are restored.
+  //    Bookings / conversations / notifications reference other users and are
+  //    intentionally NOT imported to avoid integrity and impersonation issues.
+  async importMyData(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user.id;
+      const file = (req as any).file;
+      if (!file) {
+        return res.status(400).json({ success: false, message: "No import file uploaded" });
+      }
+
+      let payload: any;
+      try {
+        payload = JSON.parse(file.buffer.toString("utf-8"));
+      } catch {
+        return res.status(400).json({ success: false, message: "Import file is not valid JSON" });
+      }
+
+      if (payload?.meta?.format && payload.meta.format !== "basobas-user-data-export/v1") {
+        return res.status(400).json({ success: false, message: "Unrecognized export format" });
+      }
+
+      const summary = { profileUpdated: false, propertiesCreated: 0, propertiesSkipped: 0 };
+
+      // 1) Profile — restore only safe, self-owned fields (never role/password/MFA).
+      const p = payload?.profile || {};
+      const profileUpdate: any = {};
+      if (typeof p.name === "string" && p.name.trim()) profileUpdate.name = p.name.trim();
+      if (typeof p.username === "string" && p.username.trim()) profileUpdate.username = p.username.trim();
+      if (typeof p.profilePicture === "string" && p.profilePicture.trim()) {
+        profileUpdate.profilePicture = p.profilePicture.trim();
+      }
+      if (Object.keys(profileUpdate).length > 0) {
+        await userService.updateUserById(userId, profileUpdate);
+        summary.profileUpdated = true;
+      }
+
+      // 2) Properties — re-create as NEW listings owned by the current user.
+      //    owner is forced by the service; ids from the file are never used.
+      const props = Array.isArray(payload?.properties) ? payload.properties : [];
+      for (const raw of props) {
+        try {
+          const candidate: any = {
+            title: raw?.title,
+            description: raw?.description,
+            location: raw?.location,
+            price: typeof raw?.price === "number" ? raw.price : parseFloat(raw?.price),
+            bedrooms: raw?.bedrooms,
+            bathrooms: raw?.bathrooms,
+            area: raw?.area,
+            propertyType: raw?.propertyType || undefined,
+            furnished: !!raw?.furnished,
+            floor: raw?.floor,
+            parking: !!raw?.parking,
+            petPolicy: raw?.petPolicy || undefined,
+            amenities: Array.isArray(raw?.amenities) ? raw.amenities : undefined,
+            coordinates:
+              raw?.coordinates &&
+              typeof raw.coordinates.latitude === "number" &&
+              typeof raw.coordinates.longitude === "number"
+                ? { latitude: raw.coordinates.latitude, longitude: raw.coordinates.longitude }
+                : undefined,
+            images: Array.isArray(raw?.images) ? raw.images.filter((s: any) => typeof s === "string") : [],
+          };
+          Object.keys(candidate).forEach((k) => candidate[k] === undefined && delete candidate[k]);
+          const validated = CreatePropertySchema.parse(candidate);
+          await propertyService.createProperty(validated as any, userId);
+          summary.propertiesCreated += 1;
+        } catch {
+          summary.propertiesSkipped += 1;
+        }
+      }
+
+      recordAudit(req, AUDIT.DATA_IMPORTED, { targetType: "user", targetId: userId, metadata: summary });
+
+      return res.status(200).json({
+        success: true,
+        message: "Import complete",
+        imported: summary,
+        note: "Only your profile and your own property listings are imported. Bookings, conversations and notifications are not imported by design.",
+      });
+    } catch (error: any) {
+      console.error("Import Data Error:", error.message);
+      return res.status(400).json({ success: false, message: error.message || "Failed to import data" });
     }
   }
 
@@ -477,6 +596,19 @@ export class AuthController {
         return res.status(404).json({
           success: false,
           message: "User not found",
+        });
+      }
+
+      recordAudit(req, AUDIT.PROFILE_UPDATED, {
+        targetType: "user",
+        targetId: userId,
+        metadata: { fields: Object.keys(updateData) },
+      });
+      if (updateData.role !== undefined) {
+        recordAudit(req, AUDIT.ROLE_CHANGED, {
+          targetType: "user",
+          targetId: userId,
+          metadata: { newRole: updateData.role },
         });
       }
 

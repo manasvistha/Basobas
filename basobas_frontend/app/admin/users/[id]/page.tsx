@@ -81,7 +81,7 @@ export default function AdminUserDetailsPage({ params }: { params: Promise<{ id:
                     height: 120,
                     borderRadius: "50%",
                     objectFit: "cover",
-                    border: "3px solid teal",
+                    border: "3px solid #1e3a8a",
                   }}
                   onError={(e) => {
                     const imageUrl = getImageUrl(user.profilePicture);
@@ -114,7 +114,7 @@ export default function AdminUserDetailsPage({ params }: { params: Promise<{ id:
             href={`/admin/users/${resolvedParams.id}/edit`}
             style={{
               padding: "10px 16px",
-              background: "teal",
+              background: "#1e3a8a",
               color: "white",
               borderRadius: 8,
               textDecoration: "none",

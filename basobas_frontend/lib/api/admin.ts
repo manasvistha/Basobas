@@ -31,6 +31,24 @@ export const rejectProperty = async (id: string) => {
 import axios from "./axios";
 import { API } from "./endpoints";
 
+export const getAuditLogs = async (params: {
+    page?: number;
+    limit?: number;
+    action?: string;
+    status?: string;
+    from?: string;
+    to?: string;
+} = {}) => {
+    try {
+        const response = await axios.get(API.ADMIN.AUDIT_LOGS, { params });
+        return response.data;
+    } catch (err: Error | any) {
+        const errorMessage =
+            err.response?.data?.message || err.message || "Failed to load audit logs";
+        throw { message: errorMessage, status: err.response?.status, data: err.response?.data };
+    }
+};
+
 export const getUsers = async (page: number = 1, limit: number = 10) => {
     try {
         console.log('Fetching users list from admin endpoint');

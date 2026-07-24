@@ -57,7 +57,7 @@ export default function ConversationPage() {
     <div style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex', flexDirection: 'column' }}>
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
-        .chat-input:focus { outline: none; border-color: #4f46e5; }
+        .chat-input:focus { outline: none; border-color: #1e3a8a; }
       `}</style>
       
       {/* Header */}
@@ -68,7 +68,7 @@ export default function ConversationPage() {
             style={{ 
               background: 'none', 
               border: 'none', 
-              color: '#4f46e5', 
+              color: '#1e3a8a', 
               cursor: 'pointer',
               fontSize: '1.5rem',
               padding: '4px 8px',
@@ -118,7 +118,7 @@ export default function ConversationPage() {
         {loading && (
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ width: 32, height: 32, border: '3px solid #e2e8f0', borderTopColor: '#4f46e5', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
+              <div style={{ width: 32, height: 32, border: '3px solid #e2e8f0', borderTopColor: '#1e3a8a', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
               <p style={{ color: '#64748b', margin: 0 }}>Loading...</p>
             </div>
           </div>
@@ -160,7 +160,7 @@ export default function ConversationPage() {
                             </div>
                           )}
                           <div style={{ 
-                            background: mine ? 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)' : '#fff', 
+                            background: mine ? 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)' : '#fff', 
                             color: mine ? '#fff' : '#0f172a', 
                             padding: '10px 14px', 
                             borderRadius: mine ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
@@ -203,7 +203,7 @@ export default function ConversationPage() {
                   disabled={sending || !text.trim()} 
                   onClick={handleSend} 
                   style={{ 
-                    background: sending || !text.trim() ? '#9ca3af' : 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', 
+                    background: sending || !text.trim() ? '#9ca3af' : 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)', 
                     color: '#fff', 
                     border: 'none', 
                     borderRadius: '50%', 
@@ -215,7 +215,7 @@ export default function ConversationPage() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     transition: 'all 0.2s',
-                    boxShadow: sending || !text.trim() ? 'none' : '0 2px 8px rgba(79, 70, 229, 0.3)'
+                    boxShadow: sending || !text.trim() ? 'none' : '0 2px 8px rgba(30, 58, 138, 0.3)'
                   }}
                   onMouseEnter={(e) => {
                     if (!sending && text.trim()) {

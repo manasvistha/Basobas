@@ -18,7 +18,7 @@ export default function PasswordStrengthMeter({ password }: PasswordStrengthMete
   const ratio = passed / passwordRules.length;
 
   const level = ratio >= 1 ? "Strong" : ratio >= 0.8 ? "Good" : ratio >= 0.5 ? "Fair" : "Weak";
-  const color = ratio >= 1 ? "#15803d" : ratio >= 0.8 ? "#0f7670" : ratio >= 0.5 ? "#b45309" : "#dc2626";
+  const color = ratio >= 1 ? "#15803d" : ratio >= 0.8 ? "#2563eb" : ratio >= 0.5 ? "#b45309" : "#dc2626";
 
   return (
     <div style={{ marginTop: 8, display: "grid", gap: 8 }}>

@@ -2,12 +2,35 @@ import { Request, Response } from "express";
 import { UserService } from "../services/user.service";
 import { PropertyService } from "../services/property.service";
 import { BookingService } from "../services/booking.service";
+import { AuditService } from "../services/audit.service";
+import { recordAudit, AUDIT } from "../utils/audit";
 
 const userService = new UserService();
 const propertyService = new PropertyService();
 const bookingService = new BookingService();
+const auditService = new AuditService();
 
 export class AdminController {
+  // Read the security audit log (admin only). Supports pagination and filtering
+  // by action prefix, actor, status, and date range.
+  async getAuditLogs(req: Request, res: Response) {
+    try {
+      const result = await auditService.query({
+        page: parseInt(req.query.page as string) || 1,
+        limit: parseInt(req.query.limit as string) || 20,
+        action: (req.query.action as string) || undefined,
+        actor: (req.query.actor as string) || undefined,
+        status: (req.query.status as "success" | "failure") || undefined,
+        from: (req.query.from as string) || undefined,
+        to: (req.query.to as string) || undefined,
+      });
+      return res.status(200).json({ success: true, ...result });
+    } catch (error: any) {
+      console.error("Get audit logs error:", error.message);
+      return res.status(500).json({ success: false, message: error.message || "Failed to load audit logs" });
+    }
+  }
+
   async createUser(req: Request, res: Response) {
     try {
       const file = (req as any).file;
@@ -140,6 +163,19 @@ export class AdminController {
         });
       }
 
+      recordAudit(req, AUDIT.PROFILE_UPDATED, {
+        targetType: "user",
+        targetId: userId,
+        metadata: { fields: Object.keys(updateData), by: "admin" },
+      });
+      if (updateData.role !== undefined) {
+        recordAudit(req, AUDIT.ROLE_CHANGED, {
+          targetType: "user",
+          targetId: userId,
+          metadata: { newRole: updateData.role },
+        });
+      }
+
       return res.status(200).json({
         success: true,
         message: "User updated successfully",
@@ -164,6 +200,12 @@ export class AdminController {
           message: "User not found",
         });
       }
+
+      recordAudit(req, AUDIT.USER_DELETED, {
+        targetType: "user",
+        targetId: userId,
+        metadata: { email: (user as any)?.email },
+      });
 
       return res.status(200).json({
         success: true,
@@ -217,6 +259,12 @@ export class AdminController {
           message: "User not found",
         });
       }
+
+      recordAudit(req, AUDIT.ROLE_CHANGED, {
+        targetType: "user",
+        targetId: userId,
+        metadata: { newRole: "admin", via: "promote" },
+      });
 
       return res.status(200).json({
         success: true,
@@ -284,6 +332,11 @@ export class AdminController {
       }
 
       const property = await propertyService.updatePropertyStatus(id, status, adminId);
+      recordAudit(req, AUDIT.PROPERTY_MODERATED, {
+        targetType: "property",
+        targetId: id,
+        metadata: { status },
+      });
       return res.status(200).json({
         success: true,
         message: "Property status updated successfully",
@@ -305,6 +358,7 @@ export class AdminController {
 
       // Admins are allowed to delete any property
       await propertyService.deletePropertyByAdmin(id);
+      recordAudit(req, AUDIT.PROPERTY_DELETED, { targetType: "property", targetId: id });
       return res.status(200).json({
         success: true,
         message: "Property deleted successfully",

@@ -113,7 +113,7 @@ export default function BookingRequestsPage() {
   return (
     <div style={{ minHeight: "100vh", padding: "32px 20px" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, background: "linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(239, 250, 247, 0.65))", border: "1px solid rgba(170, 205, 196, 0.5)", borderRadius: 24, boxShadow: "0 22px 55px -30px rgba(8, 53, 49, 0.35)", padding: "18px 20px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, background: "linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(239, 250, 247, 0.65))", border: "1px solid rgba(226, 232, 240, 0.5)", borderRadius: 24, boxShadow: "0 22px 55px -30px rgba(8, 53, 49, 0.35)", padding: "18px 20px" }}>
           <div>
             <BackPillLink href="/dashboard" label="Back to dashboard" />
             <h1 style={{ margin: "8px 0 0", color: "#0f172a" }}>Booking Requests</h1>
@@ -161,7 +161,7 @@ export default function BookingRequestsPage() {
                         <td style={{ padding: 14, display: "flex", gap: 12, alignItems: "center", fontSize: 14, justifyContent: 'flex-start' }}>
                           <Link
                             href={`/booking-requests/${booking._id}`}
-                            style={{ textDecoration: "none", color: "#4f46e5", fontWeight: 600, fontSize: 13 }}
+                            style={{ textDecoration: "none", color: "#1e3a8a", fontWeight: 600, fontSize: 13 }}
                           >
                             Details & Chat
                           </Link>

@@ -168,7 +168,7 @@ export default function AdminUserEditPage({ params }: { params: Promise<{ id: st
               style={{
                 marginTop: 8,
                 padding: "12px 20px",
-                background: "teal",
+                background: "#1e3a8a",
                 color: "white",
                 border: "none",
                 borderRadius: 8,

@@ -53,7 +53,7 @@ export default function AdminBookingsPage() {
   return (
     <div style={{ minHeight: "100vh", padding: "32px 20px" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <div style={{ marginBottom: 20, background: "linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(239, 250, 247, 0.65))", border: "1px solid rgba(170, 205, 196, 0.5)", borderRadius: 24, boxShadow: "0 22px 55px -30px rgba(8, 53, 49, 0.35)", padding: "18px 20px" }}>
+        <div style={{ marginBottom: 20, background: "linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(239, 250, 247, 0.65))", border: "1px solid rgba(226, 232, 240, 0.5)", borderRadius: 24, boxShadow: "0 22px 55px -30px rgba(8, 53, 49, 0.35)", padding: "18px 20px" }}>
           <BackPillLink href="/admin/dashboard" label="Back to admin dashboard" />
           <h1 style={{ margin: "8px 0 0", color: "#0f172a" }}>All Bookings (Read Only)</h1>
         </div>

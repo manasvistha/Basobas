@@ -17,6 +17,7 @@ import './models/conversation.model';
 import './models/notification.model';
 import './models/booking.model';
 import './models/favorite.model';
+import './models/audit-log.model';
 
 // Create upload directories if they don't exist
 import fs from 'fs';

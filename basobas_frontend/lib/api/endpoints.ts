@@ -5,6 +5,7 @@ export const API = {
     LOGOUT: '/api/auth/logout',
    PROFILE: '/api/auth/profile',
   EXPORT_DATA: '/api/auth/export-data',
+  IMPORT_DATA: '/api/auth/import-data',
   VERIFY_MFA: '/api/auth/login/verify-mfa',
   CHANGE_EXPIRED: '/api/auth/password/change-expired',
   MFA_SETUP: '/api/auth/mfa/setup',
@@ -22,6 +23,7 @@ export const API = {
   DELETE_USER: (id: string) => `/api/admin/users/${id}`,
   PROMOTE_USER: (id: string) => `/api/admin/users/${id}/promote`,
     LIST_BOOKINGS: '/api/admin/bookings',
+    AUDIT_LOGS: '/api/admin/audit-logs',
  },
  PROPERTY: {
   LIST: '/api/property',

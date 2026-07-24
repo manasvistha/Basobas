@@ -1,0 +1,213 @@
+/* ============ Premium navbar ============ */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  padding: 14px 0;
+  /* Dark frosted-glass navbar (like the reference pill). */
+  background: rgba(15, 23, 42, 0.32);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  transition: padding 0.35s ease, background 0.35s ease, box-shadow 0.35s ease;
+}
+.navbarScrolled {
+  padding: 8px 0;
+  background: rgba(15, 23, 42, 0.55);
+  box-shadow: 0 10px 30px -22px rgba(0, 0, 0, 0.6);
+}
+.navInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.logo {
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+.logo:hover { transform: scale(1.05); }
+/* White chip keeps the logo clearly visible on the dark hero and the light
+   scrolled navbar alike. */
+.logoChip {
+  display: inline-flex;
+  align-items: center;
+  /* No card. Render the dark logo in white so it reads on the dark glass. */
+  filter: brightness(0) invert(1) drop-shadow(0 1px 6px rgba(0, 0, 0, 0.35));
+}
+
+.navLinks { display: flex; align-items: center; gap: 30px; }
+.navLink {
+  position: relative;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  font-size: 15px;
+  text-decoration: none;
+  padding: 4px 0;
+  transition: color 0.25s ease;
+}
+.navLink::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: -2px;
+  width: 0; height: 2px;
+  border-radius: 2px;
+  background: var(--lux-grad);
+  transition: width 0.3s ease;
+}
+.navLink:hover { color: #ffffff; }
+.navLink:hover::after { width: 100%; }
+
+.navActions { display: flex; align-items: center; gap: 12px; }
+
+.ghostBtn {
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.92);
+  text-decoration: none;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+.ghostBtn:hover { background: rgba(255, 255, 255, 0.14); color: #ffffff; }
+
+.primaryBtn {
+  padding: 11px 22px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  background: var(--lux-grad);
+  background-size: 160% 160%;
+  box-shadow: 0 12px 24px -12px rgba(37, 99, 235, 0.7);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background-position 0.5s ease;
+}
+.primaryBtn:hover {
+  transform: translateY(-2px) scale(1.03);
+  background-position: right center;
+  box-shadow: 0 18px 34px -12px rgba(37, 99, 235, 0.75);
+}
+
+.menuBtn {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+}
+.menuBtn span {
+  width: 22px; height: 2px; border-radius: 2px;
+  background: #ffffff; display: block;
+}
+.mobileMenu {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 24px 18px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.mobileLink { color: #1e293b; text-decoration: none; font-weight: 500; padding: 8px 0; }
+
+@media (max-width: 860px) {
+  .navLinks { display: none; }
+  .ghostBtn { display: none; }
+  .menuBtn { display: flex; }
+}
+
+/* ============ Premium footer ============ */
+.footer {
+  position: relative;
+  margin-top: 80px;
+  overflow: hidden;
+  background: linear-gradient(160deg, #0f172a 0%, #172554 60%, #1e3a8a 100%);
+  color: #cbd5e1;
+}
+.footerGlow {
+  position: absolute;
+  top: -120px; right: -80px;
+  width: 420px; height: 420px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.35), transparent 70%);
+  filter: blur(20px);
+  pointer-events: none;
+}
+.footerInner { position: relative; max-width: 1200px; margin: 0 auto; padding: 64px 24px 32px; }
+
+.newsletter {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  border-radius: 22px;
+  padding: 32px;
+  margin-bottom: 56px;
+}
+.newsletterTitle { color: #fff; font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+.newsletterText { color: #94a3b8; margin-bottom: 20px; }
+.newsletterForm { display: flex; gap: 12px; flex-wrap: wrap; }
+.newsletterInput {
+  flex: 1;
+  min-width: 220px;
+  padding: 13px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+.newsletterInput::placeholder { color: #94a3b8; }
+.newsletterInput:focus { border-color: var(--lux-accent); background: rgba(255, 255, 255, 0.12); }
+
+.footerGrid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: 40px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.footerBrand { max-width: 320px; }
+.footerLogo {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 24px; font-weight: 800; color: #fff;
+  display: inline-block; margin-bottom: 12px;
+}
+.footerTagline { color: #94a3b8; line-height: 1.6; margin-bottom: 18px; }
+.socials { display: flex; gap: 12px; }
+.socialLink {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: grid; place-items: center;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+.socialLink:hover { transform: translateY(-3px); background: var(--lux-secondary); color: #fff; }
+
+.footerCol { display: flex; flex-direction: column; gap: 12px; }
+.footerColTitle { color: #fff; font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.footerLink { color: #94a3b8; text-decoration: none; font-size: 14px; transition: color 0.2s ease, padding-left 0.2s ease; }
+.footerLink:hover { color: #fff; padding-left: 4px; }
+
+.footerBottom {
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  padding-top: 24px; color: #64748b; font-size: 13px;
+}
+
+@media (max-width: 860px) {
+  .footerGrid { grid-template-columns: 1fr 1fr; gap: 28px; }
+}
+@media (max-width: 520px) {
+  .footerGrid { grid-template-columns: 1fr; }
+}
