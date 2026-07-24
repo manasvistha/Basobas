@@ -4,16 +4,18 @@
   top: 0;
   z-index: 100;
   width: 100%;
-  padding: 18px 0;
+  padding: 14px 0;
+  /* Dark frosted-glass navbar (like the reference pill). */
+  background: rgba(15, 23, 42, 0.32);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
   transition: padding 0.35s ease, background 0.35s ease, box-shadow 0.35s ease;
 }
 .navbarScrolled {
   padding: 8px 0;
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.7);
-  box-shadow: 0 10px 30px -22px rgba(15, 23, 42, 0.4);
+  background: rgba(15, 23, 42, 0.55);
+  box-shadow: 0 10px 30px -22px rgba(0, 0, 0, 0.6);
 }
 .navInner {
   max-width: 1200px;
@@ -35,21 +37,14 @@
 .logoChip {
   display: inline-flex;
   align-items: center;
-  padding: 7px 16px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 8px 22px -10px rgba(15, 23, 42, 0.45);
-  transition: box-shadow 0.3s ease;
-}
-.navbarScrolled .logoChip {
-  background: #ffffff;
-  box-shadow: 0 4px 12px -6px rgba(15, 23, 42, 0.25);
+  /* No card. Render the dark logo in white so it reads on the dark glass. */
+  filter: brightness(0) invert(1) drop-shadow(0 1px 6px rgba(0, 0, 0, 0.35));
 }
 
 .navLinks { display: flex; align-items: center; gap: 30px; }
 .navLink {
   position: relative;
-  color: #334155;
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 500;
   font-size: 15px;
   text-decoration: none;
@@ -65,7 +60,7 @@
   background: var(--lux-grad);
   transition: width 0.3s ease;
 }
-.navLink:hover { color: var(--lux-secondary); }
+.navLink:hover { color: #ffffff; }
 .navLink:hover::after { width: 100%; }
 
 .navActions { display: flex; align-items: center; gap: 12px; }
@@ -75,11 +70,11 @@
   border-radius: 999px;
   font-weight: 600;
   font-size: 14px;
-  color: #1e293b;
+  color: rgba(255, 255, 255, 0.92);
   text-decoration: none;
   transition: background 0.25s ease, color 0.25s ease;
 }
-.ghostBtn:hover { background: rgba(37, 99, 235, 0.08); color: var(--lux-secondary); }
+.ghostBtn:hover { background: rgba(255, 255, 255, 0.14); color: #ffffff; }
 
 .primaryBtn {
   padding: 11px 22px;
@@ -112,7 +107,7 @@
 }
 .menuBtn span {
   width: 22px; height: 2px; border-radius: 2px;
-  background: #1e293b; display: block;
+  background: #ffffff; display: block;
 }
 .mobileMenu {
   overflow: hidden;

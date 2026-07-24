@@ -1,7 +1,5 @@
 # Reproducible full-stack setup: MongoDB + backend API + Next.js frontend.
-#
 #   docker compose up --build
-#
 # Copy .env.example -> .env and set secrets before running in anything but local dev.
 services:
   mongo:

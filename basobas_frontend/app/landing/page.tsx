@@ -9,9 +9,27 @@ import CountUp from "@/components/motion/CountUp";
 import styles from "./landing.module.css";
 
 const CATEGORIES = [
-  { badge: "Popular", title: "Private Rooms", text: "Cozy, affordable single rooms near you.", img: "/room img.jpg" },
-  { badge: "Trending", title: "Full Flats", text: "Entire apartments for families & sharers.", img: "/room img.jpg" },
-  { badge: "New", title: "Find Roommates", text: "Match with verified, like-minded people.", img: "/room img.jpg" },
+  {
+    badge: "Popular",
+    title: "Rooms for Rent",
+    text: "Browse available single rooms close to you.",
+    img: "/landing.jpg",
+    shade: "linear-gradient(to top, rgba(15,23,42,0.9) 6%, rgba(37,99,235,0.12) 55%, transparent)",
+  },
+  {
+    badge: "Move-in ready",
+    title: "Furnished Rooms",
+    text: "Rooms that come with everything you need.",
+    img: "/landing1.webp",
+    shade: "linear-gradient(to top, rgba(15,23,42,0.9) 6%, rgba(56,189,248,0.12) 55%, transparent)",
+  },
+  {
+    badge: "Affordable",
+    title: "Budget Rooms",
+    text: "Comfortable rooms that fit your budget.",
+    img: "/landing2.jpg",
+    shade: "linear-gradient(to top, rgba(15,23,42,0.9) 6%, rgba(30,58,138,0.18) 55%, transparent)",
+  },
 ];
 
 const FEATURES = [
@@ -112,23 +130,14 @@ export default function LandingPage() {
           <Reveal direction="left" className={styles.introMedia}>
             <div className={styles.introImg} />
             <div className={styles.introImgShade} />
-            <div className={styles.introFloat}>
-              <span className={styles.introFloatIcon}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12l9-9 9 9" /><path d="M9 21V9h6v12" /></svg>
-              </span>
-              <div>
-                <div className={styles.introFloatNum}>4,800+ homes</div>
-                <div className={styles.introFloatLabel}>ready to move in</div>
-              </div>
-            </div>
           </Reveal>
         </div>
         <Stagger className={styles.cards} gap={0.14}>
           {CATEGORIES.map((c) => (
             <StaggerItem key={c.title}>
               <Link href="/login" className={styles.card}>
-                <div className={styles.cardImg} style={{ backgroundImage: `url(${c.img})` }} />
-                <div className={styles.cardShade} />
+                <div className={styles.cardImg} style={{ backgroundImage: `url("${c.img}")` }} />
+                <div className={styles.cardShade} style={{ background: c.shade }} />
                 <div className={styles.cardBody}>
                   <span className={styles.cardBadge}>{c.badge}</span>
                   <div className={styles.cardTitle}>{c.title}</div>

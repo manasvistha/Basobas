@@ -38,7 +38,7 @@ export default function SiteNavbar() {
       <div className={styles.navInner}>
         <Link href="/" className={styles.logo} aria-label="BasoBas home">
           <span className={styles.logoChip}>
-            <Image src="/basobas.png" alt="BasoBas" width={150} height={52} priority style={{ height: "auto", width: "auto", maxHeight: 46 }} />
+            <Image src="/basobas.png" alt="BasoBas" width={200} height={72} priority style={{ height: "auto", width: "auto", maxHeight: 64 }} />
           </span>
         </Link>
 

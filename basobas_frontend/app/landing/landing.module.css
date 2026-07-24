@@ -16,7 +16,7 @@
 .heroBg {
   position: absolute;
   inset: 0;
-  background-image: url("/room img.jpg");
+  background-image: url("/landing.jpg");
   background-size: cover;
   background-position: center;
   transform: scale(1.05);
@@ -174,7 +174,7 @@
 .introImg {
   position: absolute;
   inset: 0;
-  background-image: url("/room img.jpg");
+  background-image: url("/landing2.jpg");
   background-size: cover;
   background-position: center;
   transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
